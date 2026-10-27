@@ -91,6 +91,30 @@ for iid, (rq, eq, titles, base_jpy, etitle, base_usd, jp_share) in zip(ids, SPEC
     hist["items"][iid] = days
 (HERE / "history_sample.json").write_text(json.dumps(hist, indent=0), encoding="utf-8")
 
+# discovery samples: popular Rakuten items and matching eBay.com listings from Japan
+import sys
+sys.path.insert(0, str(HERE.parent))
+from discover import ebay_query  # noqa: E402
+DISC = {
+    "牛刀 日本製": [("ミソノ 440 牛刀 21cm", 14800, 265), ("グローバル G-2 牛刀 20cm", 9900, 150)],
+    "エフェクター 日本製": [("BOSS DS-1W 技クラフト ディストーション", 15400, 195), ("Ibanez TS808 チューブスクリーマー", 22000, 300)],
+    "スピニングリール": [("ダイワ 23 エアリティ LT3000-XH", 52000, 640), ("シマノ 24 ツインパワー C3000MHG", 41000, 420)],
+    "南部鉄器": [("岩鋳 南部鉄器 鉄瓶 アラレ", 12800, 220)],
+}
+for kw, rows in DISC.items():
+    rak[kw] = []
+    for j, (title, jpy, usd) in enumerate(rows):
+        rak[kw].append({"itemName": title, "itemPrice": jpy, "itemUrl": f"https://item.rakuten.co.jp/sample-popular/{zlib.crc32(title.encode()) % 99999}/",
+                        "shopName": "人気ショップ (popular sample shop)", "postageFlag": 0, "mediumImageUrls": [],
+                        "itemCode": f"pop:{j}", "pointRate": 1, "reviewCount": 320, "reviewAverage": 4.6,
+                        "shopOfTheYearFlag": 1, "shopCode": "sample-popular", "itemCaption": ""})
+        q = ebay_query(title)
+        if q:
+            eb["EBAY_US"][q] = [{"title": q + " Japan", "price": {"value": str(round(usd * random.uniform(0.9, 1.15), 2)), "currency": "USD"},
+                                "itemWebUrl": "https://www.ebay.com/", "condition": "New", "itemLocation": {"country": "JP"},
+                                "seller": {"username": f"jp_seller_{n}", "feedbackScore": 900, "feedbackPercentage": "99.9"},
+                                "shippingOptions": [{"shippingCost": {"value": "0.00", "currency": "USD"}}]} for n in range(5)]
+
 (HERE / "rakuten.json").write_text(json.dumps(rak, ensure_ascii=False, indent=1), encoding="utf-8")
 (HERE / "ebay.json").write_text(json.dumps(eb, ensure_ascii=False, indent=1), encoding="utf-8")
 

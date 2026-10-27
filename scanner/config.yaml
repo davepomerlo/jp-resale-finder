@@ -71,18 +71,59 @@ sales:
       start: "2026-11-19 20:00"
       end: "2026-11-26 01:59"
 
-# Japan Post EMS rates in JPY (include special surcharges). Weight in grams → price.
-# Current table (from Japan Post's published EMS rates, checked Oct 2026).
+# Japan Post shipping. The app picks the cheapest allowed service for each listing.
+# Rates in JPY incl. special surcharges, by packed weight in grams. Checked Oct 2026; new rates from 1 Feb 2027.
 shipping:
-  service: EMS
-  tables:
-    - valid_from: "2000-01-01"
-      zone3: {500: 3150, 600: 3400, 700: 3650, 800: 3900, 900: 4150, 1000: 4400, 1250: 5000, 1500: 5550, 1750: 6150, 2000: 6700, 2500: 7750, 3000: 8800, 3500: 9850, 4000: 10900, 4500: 11950, 5000: 13000}
-      zone4: {500: 3900, 600: 4180, 700: 4460, 800: 4740, 900: 5020, 1000: 5300, 1250: 5990, 1500: 6600, 1750: 7290, 2000: 7900, 2500: 9100, 3000: 10300, 3500: 11500, 4000: 12700, 4500: 13900, 5000: 15100}
-    # New rates announced 9 Oct 2026, effective 1 Feb 2027 (1 kg steps; lightest band becomes 1 kg).
-    - valid_from: "2027-02-01"
-      zone3: {1000: 5100, 2000: 7700, 3000: 10100, 4000: 12500, 5000: 14900, 6000: 17600, 7000: 20050, 8000: 22500, 9000: 24950}
-      zone4: {1000: 7400, 2000: 10300, 3000: 13000, 4000: 15700, 5000: 18400, 6000: 21400, 7000: 24150, 8000: 26900, 9000: 29650}
+  allowed_services: [EMS, parcel_air]    # remove parcel_air if you always want the faster EMS
+  services:
+    EMS:
+      label: "EMS (express, tracked, insured — about 3–6 days)"
+      tables:
+        - valid_from: "2000-01-01"
+          zone3: {500: 3150, 600: 3400, 700: 3650, 800: 3900, 900: 4150, 1000: 4400, 1250: 5000, 1500: 5550, 1750: 6150, 2000: 6700, 2500: 7750, 3000: 8800, 3500: 9850, 4000: 10900, 4500: 11950, 5000: 13000}
+          zone4: {500: 3900, 600: 4180, 700: 4460, 800: 4740, 900: 5020, 1000: 5300, 1250: 5990, 1500: 6600, 1750: 7290, 2000: 7900, 2500: 9100, 3000: 10300, 3500: 11500, 4000: 12700, 4500: 13900, 5000: 15100}
+        - valid_from: "2027-02-01"
+          zone3: {1000: 5100, 2000: 7700, 3000: 10100, 4000: 12500, 5000: 14900, 6000: 17600, 7000: 20050, 8000: 22500, 9000: 24950}
+          zone4: {1000: 7400, 2000: 10300, 3000: 13000, 4000: 15700, 5000: 18400, 6000: 21400, 7000: 24150, 8000: 26900, 9000: 29650}
+    parcel_air:
+      label: "国際小包 航空便 (international parcel, airmail — tracked, slower)"
+      tables:
+        - valid_from: "2000-01-01"
+          zone3: {1000: 3850, 2000: 6000, 3000: 8150, 4000: 10300, 5000: 12450}
+          zone4: {1000: 4200, 2000: 6700, 3000: 9200, 4000: 11700, 5000: 14200}
+        - valid_from: "2027-02-01"
+          zone3: {1000: 4590, 2000: 6930, 3000: 9090, 4000: 11250, 5000: 13410}
+          zone4: {1000: 6660, 2000: 9270, 3000: 11700, 4000: 14130, 5000: 16560}
+
+# Money set aside per sale for returns, damage in transit and lost parcels (share of sale price).
+# Replaced by your real return rate once the calibration file has 10+ sales.
+risk:
+  reserve_by_category: {default: 0.02, knife: 0.03, kitchenware: 0.05, watch: 0.04}
+
+# Turn on only if you register as a 課税事業者 (business registered for consumption tax) and use 原則課税
+# (the general calculation method). Then the 10% consumption tax in your purchase prices and in eBay's fees
+# comes back as a refund, because exports are zero-rated.
+tax:
+  consumption_tax_refund: false
+
+# Your real sales, exported from the Google Sheet's "Calibration" tab as CSV and saved as
+# scanner/calibration/sales.csv. Used to replace assumptions with what actually happened.
+calibration:
+  file: calibration/sales.csv
+  min_sales_for_fees: 5
+  min_sales_for_returns: 10
+
+# Weekly ideas for new watchlist items: popular Rakuten items checked against eBay.com.
+discover:
+  enabled: true
+  weekday: 0                 # 0 = Monday (runs with the 05:07 scan)
+  per_keyword: 10
+  min_profit_jpy: 3000
+  keywords:
+    - {q: "牛刀 日本製", category: knife, weight_g: 800}
+    - {q: "エフェクター 日本製", category: pedal, weight_g: 900}
+    - {q: "スピニングリール", category: fishing, weight_g: 1200}
+    - {q: "南部鉄器", category: kitchenware, weight_g: 2500}
 
 scan:
   rakuten_hits: 30              # results fetched per watchlist item
@@ -112,4 +153,5 @@ history:
   window_days: 60              # compare against the last 60 days
   min_days: 7                  # need this many days before tagging great deals
   great_deal_below_typical: 0.15   # 🔥 when 15%+ below the item's typical Rakuten price
-  price_drop_min: 0.05         # 📉 tag when a listing drops 5%+ since it was last seen
+  price_drop_min: 0.05         # ↓ tag when a listing drops 5%+ since it was last seen
+  flash_drop_min: 0.05         # ⚡ tag when a listing drops 5%+ within the last 24 hours (time-limited sales)

@@ -1,5 +1,5 @@
 // Offline shell + network-first results.
-const CACHE = "jrf-v3";
+const CACHE = "jrf-v4";
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.webmanifest", "icons/icon.svg"];
 self.addEventListener("install", (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener("activate", (e) => e.waitUntil(

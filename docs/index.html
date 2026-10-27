@@ -21,6 +21,7 @@
   </div>
   <nav class="tabs" role="tablist">
     <button class="tab active" data-tab="deals">Deals</button>
+    <button class="tab" data-tab="ideas">Ideas</button>
     <button class="tab" data-tab="watch">Watchlist</button>
     <button class="tab" data-tab="rules">Rules</button>
     <button class="tab" data-tab="costs">Costs</button>
@@ -55,6 +56,7 @@
           <option value="roi">Return on cost</option>
           <option value="buy">Buy price</option>
           <option value="deal">Deal (vs typical price)</option>
+          <option value="week">Profit per week (sell speed)</option>
         </select>
       </label>
       <label>Search
@@ -66,6 +68,13 @@
     </form>
     <p id="count" class="count"></p>
     <div id="deals" class="cards"></div>
+  </section>
+
+  <!-- IDEAS -->
+  <section id="tab-ideas" class="panel">
+    <p class="hint">Popular Rakuten items that aren't on your watchlist yet, checked against eBay.com listings from Japan. Refreshed every Monday morning.
+      These are rough: one eBay.com price is used for every country. Copy an entry into <code>scanner/watchlist.yaml</code> to track it properly.</p>
+    <div id="ideas" class="cards"></div>
   </section>
 
   <!-- WATCHLIST -->

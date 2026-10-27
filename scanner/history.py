@@ -9,7 +9,7 @@ Stored in docs/data/history.json (the app also reads it for the price charts):
 Rakuten has no price-history API, so history starts with your first scan.
 """
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from textutil import median
@@ -41,7 +41,7 @@ def _past(hist, item_id, today, window):
     return {d: v for d, v in days.items() if start <= d < today.isoformat()}
 
 
-def tags_for(hist, item_id, listing_id, price, today: date, cfg_h):
+def tags_for(hist, item_id, listing_id, price, today: date, cfg_h, now: datetime = None):
     """Deal tags for one Rakuten listing, comparing against previous days only."""
     window, min_days = cfg_h["window_days"], cfg_h["min_days"]
     past = _past(hist, item_id, today, window)
@@ -49,7 +49,21 @@ def tags_for(hist, item_id, listing_id, price, today: date, cfg_h):
            "history_days": len(past)}
 
     lst = hist["listings"].get(listing_id)
-    if lst and lst["last_price"] and price <= lst["last_price"] * (1 - cfg_h["price_drop_min"]):
+    now = now or datetime.now(timezone.utc)
+    flash = None
+    if lst:
+        day_ago = (now - timedelta(hours=24)).isoformat()
+        recent = [(t, p) for t, p in lst.get("recent", []) if t >= day_ago]
+        if recent:
+            t_hi, p_hi = max(recent, key=lambda tp: tp[1])
+            if price <= p_hi * (1 - cfg_h.get("flash_drop_min", 0.05)):
+                jst = datetime.fromisoformat(t_hi).astimezone(timezone(timedelta(hours=9)))
+                flash = {"kind": "flash", "text": f"⚡ Price cut {1 - price / p_hi:.0%} since {jst:%H:%M} JST — may be time-limited"}
+                out["tags"].append(flash)
+                out["flash"] = True
+    if flash:
+        pass
+    elif lst and lst["last_price"] and price <= lst["last_price"] * (1 - cfg_h["price_drop_min"]):
         out["tags"].append({"kind": "drop",
                             "text": f"↓ ¥{lst['last_price'] - price:,} since {lst['last_seen']}"})
     elif not lst and hist.get("_had_listings") and len(past) >= 1:
@@ -86,7 +100,7 @@ def ebay_trend(hist, item_id, code, now_jpy, today: date, window: int):
     return round(now_jpy / base - 1, 4)
 
 
-def update(hist, item_id, today: date, matched_prices, ebay_jpy, listing_prices):
+def update(hist, item_id, today: date, matched_prices, ebay_jpy, listing_prices, now: datetime = None):
     d = today.isoformat()
     day = hist["items"].setdefault(item_id, {}).get(d, {})
     if matched_prices:
@@ -94,12 +108,15 @@ def update(hist, item_id, today: date, matched_prices, ebay_jpy, listing_prices)
         day["rak_med"] = round(median(matched_prices))
     day["ebay_jpy"] = {**day.get("ebay_jpy", {}), **{k: round(v) for k, v in ebay_jpy.items() if v}}
     hist["items"][item_id][d] = day
+    now = now or datetime.now(timezone.utc)
+    stamp, keep_after = now.isoformat(timespec="minutes"), (now - timedelta(hours=48)).isoformat()
     for lid, p in listing_prices.items():
         rec = hist["listings"].get(lid)
         if rec:
             rec.update(last_seen=d, last_price=p, low=min(rec["low"], p))
         else:
-            hist["listings"][lid] = {"first_seen": d, "last_seen": d, "last_price": p, "low": p}
+            rec = hist["listings"][lid] = {"first_seen": d, "last_seen": d, "last_price": p, "low": p}
+        rec["recent"] = [tp for tp in rec.get("recent", []) if tp[0] >= keep_after] + [[stamp, p]]
 
 
 def series(hist, item_id, today: date, window: int):

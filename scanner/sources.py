@@ -40,13 +40,13 @@ class Rakuten:
         self.endpoints = [custom] if custom else list(self.ENDPOINTS)
         self._working = None
 
-    def search(self, keyword, exclude=None, min_price=None, max_price=None, hits=30):
+    def search(self, keyword, exclude=None, min_price=None, max_price=None, hits=30, sort="+itemPrice"):
         if not self.app_id:
             raise RuntimeError("RAKUTEN_APP_ID is not set")
         params = {
             "applicationId": self.app_id,
             "keyword": keyword,
-            "sort": "+itemPrice",
+            "sort": sort,
             "hits": min(hits, 30),
             "availability": 1,
             "format": "json",

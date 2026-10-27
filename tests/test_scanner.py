@@ -30,18 +30,67 @@ def test_ems_bands_and_2027_switch():
 
 
 def test_compute_matches_hand_calculation():
+    import copy
+    cfg = copy.deepcopy(CFG)
+    cfg["shipping"]["allowed_services"] = ["EMS"]
     d = {"zone": 4, "duty": 0.125}
     sale_jpy, per_order = 15000.0, 60.0
-    r = profit.compute(10000, True, sale_jpy, d, 900, "pedal", CFG, per_order, points_jpy=500,
+    r = profit.compute(10000, True, sale_jpy, d, 900, "pedal", cfg, per_order, points_jpy=500,
                        on=date(2026, 10, 27))
-    e = CFG["ebay"]
+    e = cfg["ebay"]
     fee = (sale_jpy * (e["final_value_fee"] + e["international_fee"]) + per_order) * (1 + e["fee_tax"])
-    rev = sale_jpy * (1 - CFG["fx"]["conversion_cost"])
-    expected = rev - fee - 5020 - sale_jpy * 0.125 - (10000 - 500) - CFG["costs"]["packaging_jpy"]
+    rev = sale_jpy * (1 - cfg["fx"]["conversion_cost"])
+    reserve = sale_jpy * cfg["risk"]["reserve_by_category"]["default"]
+    expected = rev - fee - 5020 - sale_jpy * 0.125 - (10000 - 500) - cfg["costs"]["packaging_jpy"] - reserve
     assert abs(r["profit_jpy"] - expected) <= 1
-    r2 = profit.compute(10000, False, sale_jpy, d, 900, "pedal", CFG, per_order, points_jpy=500,
+    r2 = profit.compute(10000, False, sale_jpy, d, 900, "pedal", cfg, per_order, points_jpy=500,
                         on=date(2026, 10, 27))
-    assert r["profit_jpy"] - r2["profit_jpy"] == CFG["costs"]["rakuten_domestic_postage_jpy"]
+    assert r["profit_jpy"] - r2["profit_jpy"] == cfg["costs"]["rakuten_domestic_postage_jpy"]
+
+
+def test_cheapest_shipping_and_tax_refund():
+    import copy
+    sh = CFG["shipping"]
+    assert profit.cheapest_shipping(sh, 4, 900, date(2026, 10, 27)) == (4200, "parcel_air")
+    assert profit.cheapest_shipping(sh, 3, 1200, date(2026, 10, 27)) == (5000, "EMS")
+    assert profit.cheapest_shipping(sh, 4, 900, date(2027, 2, 1)) == (6660, "parcel_air")
+    cfg = copy.deepcopy(CFG)
+    d = {"zone": 3, "duty": 0}
+    off = profit.compute(11000, True, 20000, d, 900, "pedal", cfg, 60, on=date(2026, 10, 27))
+    cfg["tax"]["consumption_tax_refund"] = True
+    on = profit.compute(11000, True, 20000, d, 900, "pedal", cfg, 60, on=date(2026, 10, 27))
+    assert on["tax_refund_jpy"] > 1000 and on["profit_jpy"] - off["profit_jpy"] == on["tax_refund_jpy"]
+
+
+def test_calibration_overrides_and_speed():
+    import calibration
+    rows = [{"date": f"2026-10-{i:02d}", "item_id": "x", "country": "US", "sale_jpy": 20000, "fees": 3400,
+             "ship": 4000 + i, "days": d, "returned": i == 1} for i, d in zip(range(1, 11), [5, 7, 9, 11, 13, 6, 8, 10, 12, 14])]
+    cal = calibration.summarise(rows, CFG["calibration"])
+    assert cal["fee_rate"] == 0.17 and cal["return_rate"] == 0.1
+    ov = calibration.overrides(cal, "x", "US")
+    assert ov["shipping_jpy"] == 4006 and ov["reserve"] == 0.1
+    assert calibration.sell_speed(cal, {"id": "x"})[0] == 9.5
+    assert calibration.sell_speed(cal, {"id": "y", "days_to_sell": 20}) == (20.0, "watchlist estimate")
+    r = profit.compute(10000, True, 20000, {"zone": 4, "duty": 0}, 900, "pedal", CFG, 60, cal=ov)
+    assert r["ebay_fees_jpy"] == 3400 and r["shipping_jpy"] == 4006 and r["reserve_jpy"] == 2000
+
+
+def test_flash_price_cut_tag():
+    from datetime import datetime, timezone
+    h = {"mode": "live", "items": {}, "listings": {}, "_had_listings": True}
+    t0 = datetime(2026, 12, 4, 11, 30, tzinfo=timezone.utc)   # 20:30 JST
+    history.update(h, "x", date(2026, 12, 4), [10000], {}, {"x::1": 10000}, t0)
+    t1 = datetime(2026, 12, 4, 13, 37, tzinfo=timezone.utc)
+    r = history.tags_for(h, "x", "x::1", 8500, date(2026, 12, 4), CFG["history"], t1)
+    assert r.get("flash") and "20:30 JST" in r["tags"][0]["text"]
+
+
+def test_discovery_query_builder():
+    import discover
+    assert discover.ebay_query("ミソノ 440 牛刀 21cm") == "Misono 440"
+    assert discover.ebay_query("シマノ 23 ヴァンキッシュ C3000SDH") == "Shimano C3000SDH"
+    assert discover.ebay_query("南部鉄器 鉄瓶 アラレ") is None
 
 
 def test_points_on_tax_excluded_price():

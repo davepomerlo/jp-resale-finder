@@ -1,0 +1,120 @@
+{
+ "generated_at": "2026-10-27T11:32:30+00:00",
+ "items": [
+  {
+   "keyword": "スピニングリール",
+   "category": "fishing",
+   "title_ja": "ダイワ 23 エアリティ LT3000-XH",
+   "url": "https://item.rakuten.co.jp/sample-popular/93985/",
+   "shop": "人気ショップ (popular sample shop)",
+   "buy_jpy": 52000,
+   "ebay_query": "Daiwa LT3000-XH",
+   "sale_usd": 593.72,
+   "comps": 5,
+   "profit_by_dest": {
+    "US": 1540,
+    "CA": 13662,
+    "GB": 13662,
+    "AU": 13662,
+    "DE": 13662
+   },
+   "best_country": "CA",
+   "best_profit_jpy": 13662,
+   "reviews": 320,
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Daiwa+LT3000-XH&LH_Sold=1&LH_Complete=1",
+   "yaml": "  - id: daiwa-lt3000-xh\n    name: Daiwa LT3000-XH\n    category: fishing\n    rakuten: ダイワ 23 エアリティ LT3000-XH\n    ebay: Daiwa LT3000-XH\n    must_include: [LT3000-XH]\n    exclude: []\n    price_jpy: [31200, 83200]\n    price_usd: [296, 1068]\n    condition: ANY\n    weight_g: 1200\n"
+  },
+  {
+   "keyword": "牛刀 日本製",
+   "category": "knife",
+   "title_ja": "ミソノ 440 牛刀 21cm",
+   "url": "https://item.rakuten.co.jp/sample-popular/59600/",
+   "shop": "人気ショップ (popular sample shop)",
+   "buy_jpy": 14800,
+   "ebay_query": "Misono 440",
+   "sale_usd": 257.1,
+   "comps": 5,
+   "profit_by_dest": {
+    "US": 6115,
+    "CA": 11285,
+    "GB": 11285,
+    "AU": 11285,
+    "DE": 11285
+   },
+   "best_country": "CA",
+   "best_profit_jpy": 11285,
+   "reviews": 320,
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Misono+440&LH_Sold=1&LH_Complete=1",
+   "yaml": "  - id: misono-440\n    name: Misono 440\n    category: knife\n    rakuten: ミソノ 440 牛刀 21cm\n    ebay: Misono 440\n    must_include: [440]\n    exclude: []\n    price_jpy: [8880, 23680]\n    price_usd: [128, 462]\n    condition: ANY\n    weight_g: 800\n"
+  },
+  {
+   "keyword": "エフェクター 日本製",
+   "category": "pedal",
+   "title_ja": "Ibanez TS808 チューブスクリーマー",
+   "url": "https://item.rakuten.co.jp/sample-popular/83960/",
+   "shop": "人気ショップ (popular sample shop)",
+   "buy_jpy": 22000,
+   "ebay_query": "Ibanez TS808",
+   "sale_usd": 287.61,
+   "comps": 5,
+   "profit_by_dest": {
+    "US": 2420,
+    "CA": 8163,
+    "GB": 8163,
+    "AU": 8163,
+    "DE": 8163
+   },
+   "best_country": "CA",
+   "best_profit_jpy": 8163,
+   "reviews": 320,
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Ibanez+TS808&LH_Sold=1&LH_Complete=1",
+   "yaml": "  - id: ibanez-ts808\n    name: Ibanez TS808\n    category: pedal\n    rakuten: Ibanez TS808 チューブスクリーマー\n    ebay: Ibanez TS808\n    must_include: [TS808]\n    exclude: []\n    price_jpy: [13200, 35200]\n    price_usd: [143, 517]\n    condition: ANY\n    weight_g: 900\n"
+  },
+  {
+   "keyword": "牛刀 日本製",
+   "category": "knife",
+   "title_ja": "グローバル G-2 牛刀 20cm",
+   "url": "https://item.rakuten.co.jp/sample-popular/81794/",
+   "shop": "人気ショップ (popular sample shop)",
+   "buy_jpy": 9900,
+   "ebay_query": "Global G-2",
+   "sale_usd": 156.98,
+   "comps": 5,
+   "profit_by_dest": {
+    "US": 1100,
+    "CA": 4394,
+    "GB": 4394,
+    "AU": 4394,
+    "DE": 4394
+   },
+   "best_country": "CA",
+   "best_profit_jpy": 4394,
+   "reviews": 320,
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Global+G-2&LH_Sold=1&LH_Complete=1",
+   "yaml": "  - id: global-g-2\n    name: Global G-2\n    category: knife\n    rakuten: グローバル G-2 牛刀 20cm\n    ebay: Global G-2\n    must_include: [G-2]\n    exclude: []\n    price_jpy: [5940, 15840]\n    price_usd: [78, 282]\n    condition: ANY\n    weight_g: 800\n"
+  },
+  {
+   "keyword": "エフェクター 日本製",
+   "category": "pedal",
+   "title_ja": "BOSS DS-1W 技クラフト ディストーション",
+   "url": "https://item.rakuten.co.jp/sample-popular/90559/",
+   "shop": "人気ショップ (popular sample shop)",
+   "buy_jpy": 15400,
+   "ebay_query": "Boss DS-1W",
+   "sale_usd": 189.18,
+   "comps": 5,
+   "profit_by_dest": {
+    "US": -892,
+    "CA": 3005,
+    "GB": 3005,
+    "AU": 3005,
+    "DE": 3005
+   },
+   "best_country": "CA",
+   "best_profit_jpy": 3005,
+   "reviews": 320,
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Boss+DS-1W&LH_Sold=1&LH_Complete=1",
+   "yaml": "  - id: boss-ds-1w\n    name: Boss DS-1W\n    category: pedal\n    rakuten: BOSS DS-1W 技クラフト ディストーション\n    ebay: Boss DS-1W\n    must_include: [DS-1W]\n    exclude: []\n    price_jpy: [9240, 24640]\n    price_usd: [94, 340]\n    condition: ANY\n    weight_g: 900\n"
+  }
+ ]
+}

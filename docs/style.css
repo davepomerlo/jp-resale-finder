@@ -121,3 +121,9 @@ footer { max-width: 860px; margin: 0 auto; padding: 8px 16px 40px; color: var(--
 .chart .l-med { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
 .chart .dot { fill: var(--accent); }
 .k-min { color: var(--gain); } .k-med { color: var(--muted); }
+
+.chip.deal-flash { background: #ffb300; color: #2b1d00; border-color: transparent; font-weight: 700; }
+pre.yaml { background: var(--bg); padding: 8px; border-radius: 8px; font-size: 12px; overflow-x: auto; white-space: pre; }
+button.btn { border: 0; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.tab { font-size: 13.5px; padding-left: 2px; padding-right: 2px; }
+td:last-child { white-space: nowrap; }

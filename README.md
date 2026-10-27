@@ -116,6 +116,45 @@ Each scan records the cheapest and typical Rakuten price for every watchlist ite
 The card details show a 60-day price chart, and the Deals tab can filter to great deals only or sort by deal. Great deals
 also get top priority in push alerts. Rakuten has no price-history API, so **history starts from your first scan**.
 
+A **⚡ flash drop** tag means a listing fell 5% or more within the last 24 hours. This is common during sale hours.
+⚡ cards get the same top alert priority as 🔥 cards.
+
+## Learning from your own sales (calibration)
+The app gets more accurate once it can see what you actually earned. The Google Sheet ledger is the record:
+1. Log each sale on the **Sales** tab of the "Japan Resale Ledger & Tax Record" sheet. Delete the yellow example rows first.
+2. Every few weeks, open the Sales tab and choose **File → Download → Comma-separated values (.csv)**.
+3. In GitHub, replace `scanner/calibration/sales.csv` with that file. The column headings are recognised automatically.
+
+The next scan then does the following:
+- After 5 or more sales, it uses **your real eBay fee rate** instead of the assumed one, and your real shipping-to-estimate ratio.
+- After 10 or more sales, it uses **your real return rate** in place of the category reserve.
+- It works out **days to sell** for each item from your sales. Until you have sales, you can set `days_to_sell:` for an
+  item in `watchlist.yaml` using Terapeak or eBay sold listings. The Deals tab can sort by **profit per week**, which
+  favours items that sell quickly.
+
+The Costs tab shows which figures came from your sales and which are still defaults.
+
+## Ideas tab (new item discovery)
+Every Monday the scan searches Rakuten for the keywords under `discover:` in `config.yaml`:
+- 牛刀 日本製 (Japanese-made gyuto knife)
+- エフェクター 日本製 (Japanese-made effects pedal)
+- スピニングリール (spinning reel)
+- 南部鉄器 (Nambu cast iron)
+
+It prices the best-selling results against eBay. Anything estimated at ¥3,000+ profit appears in the **Ideas** tab
+along with a ready-to-paste watchlist entry. Treat these as leads only: check the sold prices before adding one.
+
+## Shipping, reserves, currency and tax
+- **Cheapest allowed shipping:** each card compares EMS with 国際小包 airmail (international airmail parcel) and uses
+  the cheaper one. Both use the current rates and switch to the new Japan Post rates on 1 Feb 2027. To limit the
+  choice, edit `shipping: allowed_services`.
+- **Returns reserve:** a share of the sale price is set aside for returns and damage. It is 2% by default, 3% for
+  knives, 5% for kitchenware (cast iron cracks) and 4% for watches. Change it under `risk:`.
+- **Currency check:** each card shows the profit if the yen moves 5% either way. Skip items that only work at today's rate.
+- **Consumption tax refund:** exports are tax-free, so a 課税事業者 (consumption-tax registered business) can reclaim
+  the 10% tax paid on stock. Most side businesses aren't registered, so this is off. Set `tax: consumption_tax_refund:
+  true` only if your tax accountant confirms you're registered.
+
 ## How profit is estimated
 
 ```
@@ -124,8 +163,10 @@ sell price  = median of current listings on that country's eBay site from Japan-
               If the local site has fewer than 3 listings, the eBay.com price is used instead.
 profit      = sell price in yen − currency conversion cost
               − eBay fees (final value fee + international fee + per-order fee, plus tax on fees)
-              − EMS shipping (by weight and zone; switches to the new Japan Post rates on 1 Feb 2027)
+              − cheapest allowed shipping, EMS or airmail parcel (by weight and zone; new Japan Post rates from 1 Feb 2027)
               − US duty you prepay (12.5%, US only)
+              − returns reserve (by category)
+              + consumption tax refund (only if switched on)
               − Rakuten price + 楽天ポイント (Rakuten points: shop rate + your extra rate, on the ex-tax price)
               − domestic postage (if not included) − packaging
 ```

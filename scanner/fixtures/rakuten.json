@@ -910,5 +910,118 @@
    "shopCode": "sample-shop-9",
    "itemCaption": ""
   }
+ ],
+ "牛刀 日本製": [
+  {
+   "itemName": "ミソノ 440 牛刀 21cm",
+   "itemPrice": 14800,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/59600/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:0",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  },
+  {
+   "itemName": "グローバル G-2 牛刀 20cm",
+   "itemPrice": 9900,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/81794/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:1",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  }
+ ],
+ "エフェクター 日本製": [
+  {
+   "itemName": "BOSS DS-1W 技クラフト ディストーション",
+   "itemPrice": 15400,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/90559/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:0",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  },
+  {
+   "itemName": "Ibanez TS808 チューブスクリーマー",
+   "itemPrice": 22000,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/83960/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:1",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  }
+ ],
+ "スピニングリール": [
+  {
+   "itemName": "ダイワ 23 エアリティ LT3000-XH",
+   "itemPrice": 52000,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/93985/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:0",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  },
+  {
+   "itemName": "シマノ 24 ツインパワー C3000MHG",
+   "itemPrice": 41000,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/10647/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:1",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  }
+ ],
+ "南部鉄器": [
+  {
+   "itemName": "岩鋳 南部鉄器 鉄瓶 アラレ",
+   "itemPrice": 12800,
+   "itemUrl": "https://item.rakuten.co.jp/sample-popular/68151/",
+   "shopName": "人気ショップ (popular sample shop)",
+   "postageFlag": 0,
+   "mediumImageUrls": [],
+   "itemCode": "pop:0",
+   "pointRate": 1,
+   "reviewCount": 320,
+   "reviewAverage": 4.6,
+   "shopOfTheYearFlag": 1,
+   "shopCode": "sample-popular",
+   "itemCaption": ""
+  }
  ]
 }

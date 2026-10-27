@@ -55,7 +55,7 @@
       if (el.type === "checkbox") el.checked = v; else el.value = v;
     }
     $("#filters").addEventListener("input", () => { saveFilters(); renderDeals(); });
-    renderDeals(); renderWatch(); renderRules(); renderCosts();
+    renderDeals(); renderIdeas(); renderWatch(); renderRules(); renderCosts();
   }
 
   function saveFilters() {
@@ -91,6 +91,7 @@
       return true;
     });
     const key = { profit: (r) => r.f.profit_jpy, margin: (r) => r.f.margin, roi: (r) => r.f.roi, buy: (r) => -r.o.buy_jpy,
+                  week: (r) => (r.f.profit_per_week != null ? r.f.profit_per_week : -1e9),
                   deal: (r) => (r.o.deal && r.o.deal.pct_below_typical != null ? r.o.deal.pct_below_typical : -9) }[sort];
     rows.sort((a, b) => key(b) - key(a));
 
@@ -135,23 +136,27 @@
         <div class="num"><b>${pct(f.margin)}</b><span>Margin (ROI ${pct(f.roi)})</span></div>
       </div>
       <div class="dests">${destChips}</div>
+      ${o.sell_speed && o.sell_speed.days ? `<p class="hint">⏱ Sells in about ${Math.round(o.sell_speed.days)} days (${esc(o.sell_speed.source)}) · ≈ ${yen(f.profit_per_week)} profit per week of selling time</p>` : ""}
       ${top.length ? `<ul class="warns">${top.map(warn).join("")}</ul>` : ""}
       <details>
         <summary>Breakdown, comparisons &amp; notes</summary>
         <table>
           <tr><td>Sale price ${money(f.sale_local, f.currency)} on ${esc(siteFor(f))} → yen, after conversion cost</td><td>${yen(f.revenue_jpy)}</td></tr>
-          <tr><td>eBay fees (incl. international fee &amp; tax on fees)</td><td>−${yen(f.ebay_fees_jpy)}</td></tr>
-          <tr><td>EMS shipping to ${esc(destName(f.country))} (${o.weight_g} g packed)</td><td>−${yen(f.shipping_jpy)}</td></tr>
+          <tr><td>eBay fees (${esc(f.fee_source)})</td><td>−${yen(f.ebay_fees_jpy)}</td></tr>
+          <tr><td>Shipping to ${esc(destName(f.country))}: ${esc(svcName(f.shipping_service))} (${o.weight_g} g, ${esc(f.shipping_source)})</td><td>−${yen(f.shipping_jpy)}</td></tr>
           ${f.duty_jpy ? `<tr><td>Import duty you prepay (DDP)</td><td>−${yen(f.duty_jpy)}</td></tr>` : ""}
           <tr><td>Rakuten price</td><td>−${yen(f.buy_jpy)}</td></tr>
           ${f.points_jpy ? `<tr><td>楽天ポイント (Rakuten points): shop ${o.point_rate}x${DATA.assumptions.points.extra_rate_pct ? ` + your extra ${DATA.assumptions.points.extra_rate_pct}x` : ""}</td><td>+${yen(f.points_jpy)}</td></tr>` : ""}
           ${f.domestic_postage_jpy ? `<tr><td>Domestic postage (not included in listing)</td><td>−${yen(f.domestic_postage_jpy)}</td></tr>` : ""}
           <tr><td>Packaging</td><td>−${yen(f.packaging_jpy)}</td></tr>
+          ${f.reserve_jpy ? `<tr><td>Reserve for returns / damage (${pct1(f.reserve_rate)})</td><td>−${yen(f.reserve_jpy)}</td></tr>` : ""}
+          ${f.tax_refund_jpy ? `<tr><td>Consumption-tax refund (課税事業者 / taxable business)</td><td>+${yen(f.tax_refund_jpy)}</td></tr>` : ""}
           <tr class="total"><td>Estimated profit</td><td class="${f.profit_jpy > 0 ? "gain" : "loss"}">${yen(f.profit_jpy)}</td></tr>
         </table>
         <p class="hint">Sell price = median of ${f.comp_count || 0} current listings on ${esc(siteFor(f))} from ${esc(f.comp_basis || "—")},
-          less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut${f.price_source !== "local" ? " (" + esc(f.price_source) + ")" : ""}.
-          ${(dc.jp_count ?? 0)} competing listings from Japan there. These are asking prices — check what actually sold before you buy.</p>
+          less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut.${f.price_source !== "local" ? ` ${esc((DATA.destinations[f.country] || {}).site || "")} had too few listings, so the eBay.com price is used.` : ` ${(dc.jp_count ?? 0)} competing listings from Japan there.`}
+          These are asking prices — check what actually sold before you buy.</p>
+        ${f.fx ? `<p class="hint">💱 If the yen gets 5% stronger: <b class="${f.fx.yen_stronger_5 > 0 ? "gain" : "loss"}">${yen(f.fx.yen_stronger_5)}</b> · 5% weaker: <b class="gain">${yen(f.fx.yen_weaker_5)}</b></p>` : ""}
         ${chart(item, o)}
         ${trustList(o.trust)}
         ${infos.length ? `<ul class="warns">${infos.map(warn).join("")}</ul>` : ""}
@@ -204,6 +209,10 @@
     </div>`;
   }
 
+  function svcName(k) {
+    return { EMS: "EMS", parcel_air: "国際小包 airmail parcel" }[k] || k || "—";
+  }
+
   function siteFor(f) {
     return f.price_source === "local" ? (DATA.destinations[f.country] || {}).site || "ebay.com" : "www.ebay.com";
   }
@@ -215,6 +224,37 @@
   function warn(w) {
     const src = w.source ? ` <a href="${esc(safeUrl(w.source))}" target="_blank" rel="noopener">source</a>` : "";
     return `<li class="warn ${esc(w.level)}">${LEVEL_ICON[w.level] || ""} ${esc(w.text)}${src}</li>`;
+  }
+
+  // ------------------------------------------------------------- ideas
+  function renderIdeas() {
+    const S = DATA.suggestions || { items: [] };
+    if (!S.items.length) { $("#ideas").innerHTML = `<div class="empty">No ideas yet — they appear after the Monday morning scan.</div>`; return; }
+    const when = S.generated_at ? new Date(S.generated_at).toLocaleDateString("en-GB", { dateStyle: "medium" }) : "";
+    $("#ideas").innerHTML = `<p class="count">${S.items.length} ideas · ${esc(when)}</p>` + S.items.map((s, n) => `
+      <article class="card">
+        <div class="card-head"><div class="thumb">${ICON[s.category] || "💡"}</div>
+          <div class="titles"><p class="t-en">${esc(s.ebay_query)}</p><p class="t-ja">${esc(s.title_ja)}</p>
+            <div class="chips"><span class="chip">${esc(s.keyword)}</span><span class="chip">${s.reviews} reviews on Rakuten</span></div></div></div>
+        <div class="nums">
+          <div class="num"><b>${yen(s.buy_jpy)}</b><span>Buy</span></div>
+          <div class="num"><b>${usd(s.sale_usd)}</b><span>Sell (eBay.com)</span></div>
+          <div class="num"><b class="gain">${yen(s.best_profit_jpy)}</b><span>Profit → ${esc(s.best_country)}</span></div>
+          <div class="num"><b>${s.comps}</b><span>Japan listings</span></div>
+        </div>
+        <details><summary>Watchlist entry</summary><pre class="yaml" id="yaml${n}">${esc(s.yaml)}</pre></details>
+        <div class="links">
+          <button class="btn hot" data-copy="yaml${n}">Copy watchlist entry</button>
+          <a class="btn" href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">Rakuten</a>
+          <a class="btn alt" href="${esc(safeUrl(s.sold_url))}" target="_blank" rel="noopener">eBay sold prices</a>
+        </div>
+      </article>`).join("");
+    $("#ideas").querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+      const text = document.getElementById(b.dataset.copy).textContent;
+      try { await navigator.clipboard.writeText(text); b.textContent = "Copied ✓"; }
+      catch { const r = document.createRange(); r.selectNodeContents(document.getElementById(b.dataset.copy));
+              const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "Selected — copy it"; }
+    }));
   }
 
   // ------------------------------------------------------------- watchlist
@@ -230,6 +270,8 @@
               <span class="chip" style="${ok ? "" : "color:var(--loss)"}">${esc(i.status)}</span></div></div></div>
         <div class="kv" style="margin-top:10px">
           ${Object.entries(i.comps_by_dest || {}).map(([code, m]) => `<span>${esc(m.site.replace("www.", ""))} — listings from Japan / all</span><span>${m.jp_count} / ${m.all_count} · ${money(m.local_price, m.currency)}</span>`).join("")}
+          <span>Sell speed</span><span>${i.sell_speed && i.sell_speed.days ? `~${Math.round(i.sell_speed.days)} days (${esc(i.sell_speed.source)})` : "unknown — add days_to_sell from Terapeak"}</span>
+          ${i.your_last_sale ? `<span>Your last sale</span><span>${yen(i.your_last_sale.sale_jpy)} → ${esc(i.your_last_sale.country)} (${esc(i.your_last_sale.date)})</span>` : ""}
           <span>Rakuten listings matched</span><span>${i.rakuten_matched ?? "—"} of ${i.rakuten_found ?? "—"}</span>
         </div>
         ${filteredInfo(i)}
@@ -312,10 +354,22 @@
       ["Compared against", `last ${hc.window_days} days`], ["Tags start after", `${hc.min_days} days of scans`],
       ["🔥 Great deal when", `${pct1(hc.great_deal_below_typical)} below typical price`],
       ["↓ Price-drop tag when", `listing falls ${pct1(hc.price_drop_min)}+`]];
+    const C = DATA.calibration || {};
+    const assumedFee = (e.final_value_fee + e.international_fee) * (1 + e.fee_tax);
+    const calRows = [["Sales in the file", (C.sales || 0) + (C.sample ? " (sample)" : "")],
+      ["eBay fees: real vs assumed", C.fee_rate != null ? `${pct1(C.fee_rate)} vs ${pct1(assumedFee)}` : `assumed ${pct1(assumedFee)} (needs 5 sales)`],
+      ["Returns / damage rate", C.return_rate != null ? pct1(C.return_rate) : "category reserve (needs 10 sales)"],
+      ["Items with real shipping & sell speed", C.items_with_sales || 0]];
+    const rb = (a.risk || {}).reserve_by_category || {};
+    rows.push(["Shipping services compared", (a.allowed_services || []).map(svcName).join(", ")]);
+    rows.push(["Returns / damage reserve", Object.entries(rb).map(([k, v]) => `${k} ${pct1(v)}`).join(", ")]);
+    rows.push(["Consumption-tax refund", (a.tax || {}).consumption_tax_refund ? "on (課税事業者 / taxable business)" : "off"]);
     const kv = (rs) => `<div class="kv">${rs.map(([k, v]) => `<span>${k}</span><span>${v}</span>`).join("")}</div>`;
     $("#costs").innerHTML = `<div class="section"><h3>Scan schedule</h3>${kv(schedRows)}
       <p class="hint">Add お買い物マラソン (Shopping Marathon) and other sale dates under <code>sales: windows</code> in config.yaml when Rakuten announces them. 楽天スーパーSALE (Super Sale) is detected automatically.</p></div>
       <div class="section"><h3>Push alerts</h3>${kv(alertRows)}</div>
+      <div class="section"><h3>Calibration from your sales</h3>${kv(calRows)}
+        <p class="hint">Export the Google Sheet's "Calibration" tab as CSV and save it as <code>scanner/calibration/sales.csv</code> on GitHub.</p></div>
       <div class="section"><h3>Fees &amp; costs</h3>${kv(rows)}</div>
       <div class="section"><h3>楽天ポイント (Rakuten points)</h3>${kv(ptsRows)}</div>
       <div class="section"><h3>Seller trust filters</h3>${kv(trustRows)}</div>

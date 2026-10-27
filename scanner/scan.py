@@ -26,6 +26,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 import alerts  # noqa: E402
+import calibration  # noqa: E402
+import discover  # noqa: E402
 import history  # noqa: E402
 import profit  # noqa: E402
 import rules as rules_mod  # noqa: E402
@@ -57,6 +59,20 @@ def local_band(price_usd, cur, jpy):
     return [price_usd[0] * k * 0.8, price_usd[1] * k * 1.2]
 
 
+def _sample_sales():
+    """Made-up sales for SAMPLE mode so the calibration features are visible."""
+    rows = []
+    for i, (iid, cc, sale, fee, ship, days, ret) in enumerate([
+        ("boss-sd1w-waza", "US", 21500, 3650, 4180, 6, False), ("boss-sd1w-waza", "GB", 19800, 3300, 3400, 9, False),
+        ("boss-sd1w-waza", "US", 22300, 3800, 4180, 4, False), ("maxon-od808", "US", 25100, 4250, 4180, 12, False),
+        ("misono-ux10-gyuto-240", "US", 51000, 8600, 4740, 15, False),
+        ("misono-ux10-gyuto-240", "AU", 52500, 8800, 3900, 21, True),
+        ("tojiro-dp-gyuto-210", "US", 17800, 3050, 4460, 8, False)]):
+        rows.append({"date": f"2026-10-{10 + i:02d}", "item_id": iid, "country": cc, "sale_jpy": sale, "fees": fee,
+                     "ship": ship, "days": days, "returned": ret})
+    return rows
+
+
 def run(mock=False, today=None, now=None):
     cfg, watch, rules = load("config.yaml"), load("watchlist.yaml"), load("rules.yaml")
     today = today or date.today()
@@ -67,7 +83,10 @@ def run(mock=False, today=None, now=None):
     dests = cfg["destinations"]
     per_order_jpy = cfg["ebay"]["per_order_fee_usd"] * jpy["USD"]
     sale_now = saleinfo.current(cfg.get("sales"), now)
+    now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     hist = history.load("sample" if mock else "live", today)
+    cal = calibration.load(cfg) if not mock else calibration.summarise(_sample_sales(), cfg.get("calibration", {}))
+    cfg["_rules"] = rules
     cfg_h, cfg_t = cfg["history"], cfg.get("trust", {})
 
     items_out, opps, errors = [], [], []
@@ -155,10 +174,12 @@ def run(mock=False, today=None, now=None):
             cands = sorted(matched, key=lambda r: r["price_jpy"])[: cfg["scan"]["candidates_per_item"]]
             translations = tr.translate_many([c["title"] for c in cands])
 
-            item_hist_series = None
+            speed_days, speed_src = calibration.sell_speed(cal, it)
+            info["sell_speed"] = {"days": speed_days, "source": speed_src}
+            info["your_last_sale"] = cal["items"].get(it["id"], {}).get("last")
             for c in cands:
                 opp_id = f"{it['id']}::{c.get('item_code') or c['url']}"
-                deal = history.tags_for(hist, it["id"], opp_id, c["price_jpy"], today, cfg_h)
+                deal = history.tags_for(hist, it["id"], opp_id, c["price_jpy"], today, cfg_h, now_utc)
                 title_en = translations.get(c["title"])
                 warns, blocked = rules_mod.warnings_for(it, c["title"], title_en, rules, list(dests))
                 pts = profit.points_value(c["price_jpy"], c.get("point_rate"), cfg.get("points"))
@@ -170,7 +191,8 @@ def run(mock=False, today=None, now=None):
                         continue
                     res = profit.compute(c["price_jpy"], c["postage_included"], m["sale_jpy"], d, it["weight_g"],
                                          it["category"], cfg, per_order_jpy, pts,
-                                         it.get("shipping_override_jpy"), on=today)
+                                         it.get("shipping_override_jpy"), on=today,
+                                         cal=calibration.overrides(cal, it["id"], code))
                     res.update({"blocked": code in blocked, "price_source": m["price_source"],
                                 "sale_local": m["local"] if m["price_source"] == "local" else us.get("local"),
                                 "currency": d["currency"] if m["price_source"] == "local" else "USD",
@@ -181,6 +203,19 @@ def run(mock=False, today=None, now=None):
                 best_code = max(allowed, key=lambda k: allowed[k]["profit_jpy"]) if allowed else None
                 best = allowed.get(best_code) if best_code else None
 
+                if best:
+                    # what happens to profit if the yen moves 5% either way
+                    d_best = dests[best_code]
+                    sens = {}
+                    for label, k in (("yen_stronger_5", 0.95), ("yen_weaker_5", 1.05)):
+                        r2 = profit.compute(c["price_jpy"], c["postage_included"], market[best_code]["sale_jpy"] * k,
+                                            d_best, it["weight_g"], it["category"], cfg, per_order_jpy * k, pts,
+                                            it.get("shipping_override_jpy"), on=today,
+                                            cal=calibration.overrides(cal, it["id"], best_code))
+                        sens[label] = r2["profit_jpy"]
+                    best = {**best, "fx": sens}
+                    if speed_days:
+                        best["profit_per_week"] = round(best["profit_jpy"] / max(speed_days, 1) * 7)
                 n_comps = (best or {}).get("comp_count", 0)
                 if best and n_comps < 3:
                     warns.append({"level": "caution", "scope": "data",
@@ -191,6 +226,9 @@ def run(mock=False, today=None, now=None):
                 if rak_median and c["price_jpy"] < 0.6 * rak_median and len(matched) >= 3:
                     warns.append({"level": "caution", "scope": "data",
                                   "text": "Much cheaper than other Rakuten matches — make sure it's the same item, not a part or used/damaged."})
+                if best and best["fx"]["yen_stronger_5"] <= 0 < best["profit_jpy"]:
+                    warns.append({"level": "caution", "scope": "profit",
+                                  "text": "A 5% stronger yen would turn this into a loss."})
                 if best and best["margin"] < cfg["scan"]["thin_margin_warning"]:
                     warns.append({"level": "info", "scope": "profit",
                                   "text": f"Thin margin ({best['margin']:.0%}). Fee or rate changes could wipe it out."})
@@ -216,6 +254,7 @@ def run(mock=False, today=None, now=None):
                     "buy_jpy": c["price_jpy"], "postage_included": c["postage_included"],
                     "point_rate": c.get("point_rate"), "points_jpy": pts,
                     "sale_usd": us.get("local"), "weight_g": it["weight_g"],
+                    "sell_speed": {"days": speed_days, "source": speed_src},
                     "per_dest": per,
                     "best": {"country": best_code, **best} if best else None,
                     "warnings": warns, "blocked": sorted(blocked),
@@ -225,7 +264,7 @@ def run(mock=False, today=None, now=None):
             info["ebay_trend_us"] = history.ebay_trend(hist, it["id"], "US", sale_by_dest.get("US"), today,
                                                        cfg_h["window_days"])
             history.update(hist, it["id"], today, [r["price_jpy"] for r in matched], sale_by_dest,
-                           {f"{it['id']}::{r.get('item_code') or r['url']}": r["price_jpy"] for r in matched})
+                           {f"{it['id']}::{r.get('item_code') or r['url']}": r["price_jpy"] for r in matched}, now_utc)
             info["history"] = history.series(hist, it["id"], today, cfg_h["window_days"])
         except Exception as e:
             info["status"] = "error"
@@ -236,6 +275,18 @@ def run(mock=False, today=None, now=None):
 
     tr.save()
     history.save(hist, today, cfg_h["keep_days"])
+
+    # --- weekly ideas for new watchlist items
+    cfg_d = cfg.get("discover") or {}
+    if cfg_d.get("enabled") and discover.due(cfg_d, now, force=mock or os.environ.get("DISCOVER") == "1"):
+        try:
+            suggestions = discover.run(cfg, watch, rak, ebay, jpy, today)
+        except Exception as e:
+            traceback.print_exc()
+            errors.append({"item": "discover", "error": str(e)})
+            suggestions = discover.load_previous()
+    else:
+        suggestions = discover.load_previous()
     opps.sort(key=lambda o: (o["best"] or {}).get("profit_jpy", -10**9), reverse=True)
     result_history_mode = hist["mode"]
     alert_info = alerts.send(opps, cfg, {k: d["name"] for k, d in dests.items()},
@@ -254,9 +305,11 @@ def run(mock=False, today=None, now=None):
         "assumptions": {
             "ebay": cfg["ebay"], "fx_conversion_cost": cfg["fx"]["conversion_cost"],
             "costs": cfg["costs"], "points": cfg.get("points"), "alert_rules": cfg.get("alerts"),
-            "trust": cfg_t, "history": cfg_h,
-            "shipping_service": cfg["shipping"]["service"],
-            "shipping_table_from": max(t["valid_from"] for t in cfg["shipping"]["tables"]
+            "trust": cfg_t, "history": cfg_h, "risk": cfg.get("risk"), "tax": cfg.get("tax"),
+            "shipping_services": {k: v["label"] for k, v in cfg["shipping"]["services"].items()},
+            "allowed_services": cfg["shipping"]["allowed_services"],
+            "shipping_service": " or ".join(cfg["shipping"]["allowed_services"]),
+            "shipping_table_from": max(t["valid_from"] for t in cfg["shipping"]["services"]["EMS"]["tables"]
                                        if date.fromisoformat(t["valid_from"]) <= today),
         },
         "destinations": dests,
@@ -265,6 +318,9 @@ def run(mock=False, today=None, now=None):
                   "destinations": rules.get("destinations", {})},
         "items": items_out,
         "opportunities": opps,
+        "suggestions": suggestions,
+        "calibration": {"sales": cal["sales"], "fee_rate": cal["fee_rate"], "return_rate": cal["return_rate"],
+                        "items_with_sales": len(cal["items"]), "sample": mock},
         "errors": errors,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
