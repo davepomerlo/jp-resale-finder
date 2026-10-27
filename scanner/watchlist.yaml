@@ -6,7 +6,8 @@
 #   category     knife | pedal | record | cd_dvd | game | book | fishing | watch | kitchenware | kimono | cards
 #   rakuten      what to search on 楽天市場 (Rakuten Ichiba), in Japanese
 #   ebay         what to search on eBay, in English
-#   must_include words that MUST appear in a listing title (any language; case and full-width ignored)
+#   must_include words that MUST appear in every listing title, Rakuten and eBay (case and full-width ignored)
+#   rakuten_must_include / ebay_must_include   extra required words for just one side (e.g. Japanese vs English)
 #   exclude      words that disqualify a listing (accessories, wrong model, etc.)
 #   price_jpy    [min, max] Rakuten price band, to skip accessories and bundles
 #   price_usd    [min, max] eBay price band
@@ -80,7 +81,8 @@ items:
     category: kitchenware
     rakuten: 南部鉄器 鉄瓶 1.0L
     ebay: Nambu tekki tetsubin cast iron kettle Japan
-    must_include: [鉄瓶]
+    rakuten_must_include: [鉄瓶]
+    ebay_must_include: [tetsubin]
     exclude: [急須, teapot, 敷物, trivet]
     price_jpy: [8000, 40000]
     price_usd: [80, 400]

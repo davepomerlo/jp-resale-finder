@@ -5,7 +5,9 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scanner"))
+import alerts  # noqa: E402
 import profit  # noqa: E402
+import saleinfo  # noqa: E402
 import rules as rules_mod  # noqa: E402
 from textutil import contains_all, contains_any  # noqa: E402
 
@@ -27,15 +29,45 @@ def test_ems_bands_and_2027_switch():
 
 def test_compute_matches_hand_calculation():
     d = {"zone": 4, "duty": 0.125}
-    r = profit.compute(10000, True, 100.0, 150.0, d, 900, "pedal", CFG, on=date(2026, 10, 27))
+    sale_jpy, per_order = 15000.0, 60.0
+    r = profit.compute(10000, True, sale_jpy, d, 900, "pedal", CFG, per_order, points_jpy=500,
+                       on=date(2026, 10, 27))
     e = CFG["ebay"]
-    fee = (100 * (e["final_value_fee"] + e["international_fee"]) + e["per_order_fee_usd"]) * (1 + e["fee_tax"]) * 150
-    rev = 100 * 150 * (1 - CFG["fx"]["conversion_cost"])
-    expected = rev - fee - 5020 - 100 * 150 * 0.125 - 10000 - CFG["costs"]["packaging_jpy"]
+    fee = (sale_jpy * (e["final_value_fee"] + e["international_fee"]) + per_order) * (1 + e["fee_tax"])
+    rev = sale_jpy * (1 - CFG["fx"]["conversion_cost"])
+    expected = rev - fee - 5020 - sale_jpy * 0.125 - (10000 - 500) - CFG["costs"]["packaging_jpy"]
     assert abs(r["profit_jpy"] - expected) <= 1
-    # postage not included adds the domestic postage cost
-    r2 = profit.compute(10000, False, 100.0, 150.0, d, 900, "pedal", CFG, on=date(2026, 10, 27))
+    r2 = profit.compute(10000, False, sale_jpy, d, 900, "pedal", CFG, per_order, points_jpy=500,
+                        on=date(2026, 10, 27))
     assert r["profit_jpy"] - r2["profit_jpy"] == CFG["costs"]["rakuten_domestic_postage_jpy"]
+
+
+def test_points_on_tax_excluded_price():
+    cfgp = {"enabled": True, "extra_rate_pct": 2, "point_value_jpy": 1.0}
+    assert profit.points_value(11000, 1, cfgp) == 300          # 10,000 ex-tax × 3%
+    assert profit.points_value(11000, 10, {"enabled": False}) == 0
+
+
+def test_sale_windows():
+    from datetime import datetime
+    JST = saleinfo.JST
+    s = CFG["sales"]
+    assert saleinfo.current(s, datetime(2026, 12, 4, 21, 0, tzinfo=JST))["name"].startswith("楽天スーパーSALE")
+    assert saleinfo.current(s, datetime(2026, 12, 4, 19, 0, tzinfo=JST)) is None
+    assert saleinfo.current(s, datetime(2026, 12, 11, 1, 30, tzinfo=JST)) is not None
+    assert saleinfo.upcoming(s, datetime(2026, 12, 12, tzinfo=JST))["start"].month == 3
+
+
+def test_alert_selection_dedupes_and_thresholds():
+    a = {"min_profit_jpy": 5000, "min_margin": 0.15, "max_per_run": 5, "realert_if_profit_up": 0.2}
+    mk = lambda i, p, m, warn=None: {"id": i, "best": {"profit_jpy": p, "margin": m, "country": "US"},  # noqa: E731
+                                     "warnings": warn or []}
+    opps = [mk("a", 9000, 0.3), mk("b", 3000, 0.3), mk("c", 9000, 0.1),
+            mk("d", 9000, 0.3, [{"level": "block", "text": "alcohol"}]), mk("e", 9000, 0.3)]
+    state = {"e": {"profit_jpy": 8500, "at": "2026-10-27T00:00:00+00:00"}}
+    assert [o["id"] for o in alerts.pick(opps, a, state)] == ["a"]
+    state["e"]["profit_jpy"] = 7000   # profit rose 28% since last alert -> alert again
+    assert {o["id"] for o in alerts.pick(opps, a, state)} == {"a", "e"}
 
 
 def test_matching_ignores_fullwidth_and_case():

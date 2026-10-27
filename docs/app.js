@@ -7,6 +7,7 @@
   const usd = (n) => (n == null ? "—" : "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 }));
   const pct = (n) => (n == null ? "—" : Math.round(n * 100) + "%");
   const pct1 = (n) => (n == null ? "—" : +(n * 100).toFixed(2) + "%");
+  const money = (n, cur) => (n == null ? "—" : new Intl.NumberFormat("en-GB", { style: "currency", currency: cur || "USD", maximumFractionDigits: 0 }).format(n));
   const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "#");
   const ICON = { knife: "🔪", pedal: "🎸", record: "💿", cd_dvd: "💿", game: "🎮", book: "📚", fishing: "🎣",
                  watch: "⌚", kitchenware: "🫖", kimono: "👘", cards: "🃏" };
@@ -35,6 +36,11 @@
     const when = new Date(DATA.generated_at);
     $("#status").textContent = `Scanned ${when.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} · $1 = ¥${DATA.fx.usd_jpy}`;
     $("#sampleBanner").hidden = DATA.mode !== "sample";
+    if (DATA.sale_now) {
+      const end = new Date(DATA.sale_now.end).toLocaleString("en-GB", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" });
+      $("#saleBanner").textContent = `🛍 ${DATA.sale_now.name} is on until ${end} JST — scanning hourly 20:37–23:37.`;
+      $("#saleBanner").hidden = false;
+    }
 
     const cats = [...new Set(DATA.items.map((i) => i.category))];
     const labels = Object.fromEntries(DATA.items.map((i) => [i.category, i.label]));
@@ -93,7 +99,9 @@
 
   function card(o, f) {
     const item = DATA.items.find((i) => i.id === o.item_id) || {};
-    const comps = item.comps || {};
+    const dc = (item.comps_by_dest || {})[f.country] || item.comps || {};
+    const soldUrl = f.price_source === "local" && dc.sold_url ? dc.sold_url : item.sold_url;
+    const activeUrl = f.price_source === "local" && dc.active_url ? dc.active_url : item.active_url;
     const destName = (c) => (DATA.destinations[c] || {}).name || c;
     const relevant = o.warnings.filter((w) => !w.country || w.country === f.country);
     const top = dedupe(relevant.filter((w) => w.level !== "info"));
@@ -117,8 +125,8 @@
         </div>
       </div>
       <div class="nums">
-        <div class="num"><b>${yen(o.buy_jpy)}</b><span>Buy${o.postage_included ? "" : " + postage"}</span></div>
-        <div class="num"><b>${usd(o.sale_usd)}</b><span>Sell (est.)</span></div>
+        <div class="num"><b>${yen(o.buy_jpy)}</b><span>Buy${o.postage_included ? "" : " + postage"}${o.points_jpy ? ` · ${o.point_rate}x pts −${yen(o.points_jpy)}` : ""}</span></div>
+        <div class="num"><b>${yen(f.sale_jpy)}</b><span>Sell ${money(f.sale_local, f.currency)}</span></div>
         <div class="num"><b class="${f.profit_jpy > 0 ? "gain" : "loss"}">${yen(f.profit_jpy)}</b><span>Profit → ${esc(f.country)}</span></div>
         <div class="num"><b>${pct(f.margin)}</b><span>Margin (ROI ${pct(f.roi)})</span></div>
       </div>
@@ -127,26 +135,31 @@
       <details>
         <summary>Breakdown, comparisons &amp; notes</summary>
         <table>
-          <tr><td>Sale price ${usd(o.sale_usd)} → yen, after conversion cost</td><td>${yen(f.revenue_jpy)}</td></tr>
+          <tr><td>Sale price ${money(f.sale_local, f.currency)} on ${esc(siteFor(f))} → yen, after conversion cost</td><td>${yen(f.revenue_jpy)}</td></tr>
           <tr><td>eBay fees (incl. international fee &amp; tax on fees)</td><td>−${yen(f.ebay_fees_jpy)}</td></tr>
           <tr><td>EMS shipping to ${esc(destName(f.country))} (${o.weight_g} g packed)</td><td>−${yen(f.shipping_jpy)}</td></tr>
           ${f.duty_jpy ? `<tr><td>Import duty you prepay (DDP)</td><td>−${yen(f.duty_jpy)}</td></tr>` : ""}
           <tr><td>Rakuten price</td><td>−${yen(f.buy_jpy)}</td></tr>
+          ${f.points_jpy ? `<tr><td>楽天ポイント (Rakuten points): shop ${o.point_rate}x${DATA.assumptions.points.extra_rate_pct ? ` + your extra ${DATA.assumptions.points.extra_rate_pct}x` : ""}</td><td>+${yen(f.points_jpy)}</td></tr>` : ""}
           ${f.domestic_postage_jpy ? `<tr><td>Domestic postage (not included in listing)</td><td>−${yen(f.domestic_postage_jpy)}</td></tr>` : ""}
           <tr><td>Packaging</td><td>−${yen(f.packaging_jpy)}</td></tr>
           <tr class="total"><td>Estimated profit</td><td class="${f.profit_jpy > 0 ? "gain" : "loss"}">${yen(f.profit_jpy)}</td></tr>
         </table>
-        <p class="hint">Sell price = median of ${comps.count || 0} current eBay listings from ${esc(comps.basis || "—")}
-          (range ${usd(comps.p25_usd)}–${usd(comps.p75_usd)}), less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut.
-          ${comps.jp_count ?? 0} competing listings are from Japan. These are asking prices — check what actually sold before you buy.</p>
+        <p class="hint">Sell price = median of ${f.comp_count || 0} current listings on ${esc(siteFor(f))} from ${esc(f.comp_basis || "—")},
+          less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut${f.price_source !== "local" ? " (" + esc(f.price_source) + ")" : ""}.
+          ${(dc.jp_count ?? 0)} competing listings from Japan there. These are asking prices — check what actually sold before you buy.</p>
         ${infos.length ? `<ul class="warns">${infos.map(warn).join("")}</ul>` : ""}
       </details>
       <div class="links">
-        <a class="btn hot" href="${esc(safeUrl(item.sold_url))}" target="_blank" rel="noopener">Check eBay sold prices</a>
+        <a class="btn hot" href="${esc(safeUrl(soldUrl))}" target="_blank" rel="noopener">Check sold prices (${esc(siteFor(f).replace("www.", ""))})</a>
         <a class="btn" href="${esc(safeUrl(o.url))}" target="_blank" rel="noopener">Rakuten listing</a>
-        <a class="btn alt" href="${esc(safeUrl(item.active_url))}" target="_blank" rel="noopener">eBay listings</a>
+        <a class="btn alt" href="${esc(safeUrl(activeUrl))}" target="_blank" rel="noopener">eBay listings</a>
       </div>
     </article>`;
+  }
+
+  function siteFor(f) {
+    return f.price_source === "local" ? (DATA.destinations[f.country] || {}).site || "ebay.com" : "www.ebay.com";
   }
 
   function dedupe(ws) {
@@ -170,8 +183,7 @@
             <div class="chips"><span class="chip">${esc(i.label)}</span>
               <span class="chip" style="${ok ? "" : "color:var(--loss)"}">${esc(i.status)}</span></div></div></div>
         <div class="kv" style="margin-top:10px">
-          <span>Estimated eBay sell price</span><span>${usd(i.sale_usd)}</span>
-          <span>eBay comparisons (Japan / all)</span><span>${c.jp_count ?? "—"} / ${c.all_count ?? "—"}</span>
+          ${Object.entries(i.comps_by_dest || {}).map(([code, m]) => `<span>${esc(m.site.replace("www.", ""))} — listings from Japan / all</span><span>${m.jp_count} / ${m.all_count} · ${money(m.local_price, m.currency)}</span>`).join("")}
           <span>Rakuten listings matched</span><span>${i.rakuten_matched ?? "—"} of ${i.rakuten_found ?? "—"}</span>
         </div>
         ${i.error ? `<ul class="warns"><li class="warn block">Error: ${esc(i.error)}</li></ul>` : ""}
@@ -205,7 +217,6 @@
   function renderCosts() {
     const a = DATA.assumptions, e = a.ebay;
     const rows = [
-      ["Exchange rate", `$1 = ¥${DATA.fx.usd_jpy} (${esc(DATA.fx.source)})`],
       ["Currency conversion cost", pct1(a.fx_conversion_cost)],
       ["eBay final value fee", pct1(e.final_value_fee) + " (watches / media higher)"],
       ["eBay international fee", pct1(e.international_fee) + " — check Seller Hub"],
@@ -218,9 +229,26 @@
       ["Translation", esc(DATA.translation)],
     ];
     const dests = Object.entries(DATA.destinations).map(([k, d]) =>
-      [`${esc(d.name)} (EMS zone ${d.zone})`, d.duty ? `you prepay ~${pct1(d.duty)} duty` : "buyer pays any import tax"]);
+      [`${esc(d.name)} — ${esc(d.site.replace("www.", ""))}, ${esc(d.currency)}, EMS zone ${d.zone}`, d.duty ? `you prepay ~${pct1(d.duty)} duty` : "buyer pays any import tax"]);
+    const fxRows = Object.entries(DATA.fx.jpy_per || { USD: DATA.fx.usd_jpy }).map(([c, v]) => [`1 ${esc(c)}`, `¥${v}`]);
+    const p = a.points || {}, al = a.alert_rules || {}, alertState = DATA.alerts || {};
+    const ptsRows = [["Counted as discount", p.enabled ? "yes" : "no"], ["Shop rate", "from Rakuten, per listing"],
+      ["Your extra rate (SPU / 買いまわり shop-hopping bonus)", (p.extra_rate_pct || 0) + "x"], ["Value per point", "¥" + (p.point_value_jpy ?? 1)]];
+    const fmtJst = (iso) => new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" });
+    const schedRows = [["Every day (JST)", DATA.schedule.daily_jst.join(" and ")],
+      ["During Rakuten sales (JST)", DATA.schedule.sale_hourly_jst.join(", ")],
+      ["Sale on now", DATA.sale_now ? esc(DATA.sale_now.name) : "no"],
+      ["Next sale", DATA.next_sale ? `${esc(DATA.next_sale.name)} — ${fmtJst(DATA.next_sale.start)}` : "—"]];
+    const alertRows = [["Status", alertState.enabled ? `on — ${alertState.sent} sent last scan` : `off (${esc(alertState.reason || "")})`],
+      ["Alert when profit ≥", yen(al.min_profit_jpy)], ["…and margin ≥", pct1(al.min_margin)],
+      ["Max alerts per scan", al.max_per_run], ["Re-alert same listing if profit rises", pct1(al.realert_if_profit_up)]];
     const kv = (rs) => `<div class="kv">${rs.map(([k, v]) => `<span>${k}</span><span>${v}</span>`).join("")}</div>`;
-    $("#costs").innerHTML = `<div class="section"><h3>Fees &amp; costs</h3>${kv(rows)}</div>
+    $("#costs").innerHTML = `<div class="section"><h3>Scan schedule</h3>${kv(schedRows)}
+      <p class="hint">Add お買い物マラソン (Shopping Marathon) and other sale dates under <code>sales: windows</code> in config.yaml when Rakuten announces them. 楽天スーパーSALE (Super Sale) is detected automatically.</p></div>
+      <div class="section"><h3>Push alerts</h3>${kv(alertRows)}</div>
+      <div class="section"><h3>Fees &amp; costs</h3>${kv(rows)}</div>
+      <div class="section"><h3>楽天ポイント (Rakuten points)</h3>${kv(ptsRows)}</div>
+      <div class="section"><h3>Exchange rates</h3>${kv(fxRows)}<p class="hint">${esc(DATA.fx.source)}</p></div>
       <div class="section"><h3>Destinations</h3>${kv(dests)}
       <p class="hint">Japan Post raises international rates on 1 Feb 2027 (e.g. EMS to the US for 1 kg: ¥5,300 → ¥7,400). The app switches tables automatically on that date.</p></div>`;
   }

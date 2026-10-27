@@ -1,9 +1,11 @@
-name: Daily scan
+name: Scan
 
 on:
   schedule:
-    - cron: "7 20 * * *"     # 05:07 JST every day
-  workflow_dispatch: {}       # "Run workflow" button on the Actions tab
+    - cron: "7 20 * * *"        # 05:07 JST daily — ready for the morning commute
+    - cron: "7 11 * * *"        # 20:07 JST daily — Rakuten sales start at 20:00
+    - cron: "37 11-14 * * *"    # 20:37–23:37 JST hourly — only runs during Rakuten sale windows
+  workflow_dispatch: {}          # "Run workflow" button on the Actions tab
   push:
     branches: [main]
     paths:
@@ -27,9 +29,19 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+
+      - name: Is this run needed?
+        id: gate
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+        run: python scanner/saleinfo.py
+
       - name: Tests
+        if: steps.gate.outputs.run == 'true'
         run: python -m pytest -q tests
+
       - name: Scan
+        if: steps.gate.outputs.run == 'true'
         env:
           RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
           RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
@@ -37,6 +49,7 @@ jobs:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: |
           if [ -z "$RAKUTEN_APP_ID" ] || [ -z "$EBAY_CLIENT_ID" ]; then
             echo "API keys not set yet — publishing SAMPLE data so the app still works."
@@ -44,10 +57,13 @@ jobs:
           else
             python scanner/scan.py
           fi
+
       - name: Commit results
+        if: steps.gate.outputs.run == 'true'
         run: |
           git config user.name "resale-finder-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add docs/data/results.json scanner/cache/translations.json
+          git add docs/data/results.json scanner/cache/
           git diff --cached --quiet || git commit -m "Scan $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase --autostash || true
           git push

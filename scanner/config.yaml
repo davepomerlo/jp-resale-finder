@@ -3,14 +3,13 @@
 # Every number here feeds the profit estimate shown in the app.
 
 fx:
-  # Live USD→JPY rate is fetched each scan (Frankfurter / ECB data).
-  # This value is only used if the live fetch fails.
-  fallback_usd_jpy: 150.0
+  # Live rates are fetched each scan (Frankfurter / ECB data).
+  # These yen-per-unit values are only used if the live fetch fails.
+  fallback_jpy_per: {USD: 150.0, GBP: 195.0, EUR: 165.0, AUD: 98.0, CAD: 108.0}
   # Cost of converting your USD payout into JPY (spread + fees). Assumption.
   conversion_cost: 0.02
 
 ebay:
-  marketplace: EBAY_US          # where comparison prices come from
   # Final value fee, % of total sale (item + shipping). 2026 default for most categories.
   final_value_fee: 0.136
   # Category overrides (see watchlist "category" field)
@@ -28,19 +27,49 @@ ebay:
   undercut: 0.97
   # Need at least this many Japan-located comps to trust the median; otherwise all-location comps are used.
   min_jp_comps: 3
+  # If a local marketplace (eBay.co.uk etc.) has fewer comps than this, the eBay.com price is used instead.
+  min_local_comps: 3
 
 costs:
   packaging_jpy: 300            # box, bubble wrap, tape
   rakuten_domestic_postage_jpy: 800   # used when a Rakuten listing says postage is NOT included
 
-# Destinations the app calculates profit for.
+# Destinations the app calculates profit for. Each uses its own local eBay site for prices.
 # zone = Japan Post EMS zone. duty = share of sale price YOU pay (DDP). 0 = buyer pays on delivery / at checkout.
 destinations:
-  US: {name: United States, zone: 4, duty: 0.125, ddp_prepay_fee_jpy: 0}
-  CA: {name: Canada,        zone: 3, duty: 0.0}
-  GB: {name: United Kingdom,zone: 3, duty: 0.0}
-  AU: {name: Australia,     zone: 3, duty: 0.0}
-  DE: {name: Germany (EU),  zone: 3, duty: 0.0}
+  US: {name: United States, zone: 4, duty: 0.125, ddp_prepay_fee_jpy: 0, marketplace: EBAY_US, currency: USD, site: www.ebay.com}
+  CA: {name: Canada,        zone: 3, duty: 0.0, marketplace: EBAY_CA, currency: CAD, site: www.ebay.ca}
+  GB: {name: United Kingdom,zone: 3, duty: 0.0, marketplace: EBAY_GB, currency: GBP, site: www.ebay.co.uk}
+  AU: {name: Australia,     zone: 3, duty: 0.0, marketplace: EBAY_AU, currency: AUD, site: www.ebay.com.au}
+  DE: {name: Germany (EU),  zone: 3, duty: 0.0, marketplace: EBAY_DE, currency: EUR, site: www.ebay.de}
+
+# 楽天ポイント (Rakuten points) counted as a discount on the buy price.
+# The shop's point rate comes from the API. Add your personal extra rate here:
+# SPU (Super Point Up, from Rakuten Card, Mobile etc.) plus any 買いまわり (shop-hopping bonus) you expect during sales.
+points:
+  enabled: true
+  extra_rate_pct: 0          # e.g. 3 if your SPU gives you +3x on top of the shop's rate
+  point_value_jpy: 1.0       # lower this (e.g. 0.9) if you value 期間限定ポイント (limited-time points) less than cash
+
+# Push notifications through the free ntfy app (https://ntfy.sh). Set the NTFY_TOPIC secret to turn on.
+alerts:
+  min_profit_jpy: 5000
+  min_margin: 0.15
+  max_per_run: 5
+  realert_if_profit_up: 0.20   # alert again if profit on the same listing rises by 20%+
+  app_url: https://davepomerlo.github.io/jp-resale-finder/
+
+# Rakuten sale windows (JST). During these, extra scans run hourly 20:37–23:37.
+sales:
+  super_sale:                    # 楽天スーパーSALE (Rakuten Super Sale) — detected automatically
+    months: [3, 6, 9, 12]
+    start: {day: 4, time: "20:00"}
+    end: {day: 11, time: "01:59"}
+  # お買い物マラソン (Shopping Marathon) and other events: add them here once Rakuten announces dates.
+  windows:
+    - name: 楽天ブラックフライデー (Rakuten Black Friday) — PREDICTED, confirm dates
+      start: "2026-11-19 20:00"
+      end: "2026-11-26 01:59"
 
 # Japan Post EMS rates in JPY (include special surcharges). Weight in grams → price.
 # Current table (from Japan Post's published EMS rates, checked Oct 2026).

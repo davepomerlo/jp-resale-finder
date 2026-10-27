@@ -100,6 +100,7 @@ class Rakuten:
             "shop": it.get("shopName"),
             "image": (img or "").split("?")[0] or None,
             "item_code": it.get("itemCode"),
+            "point_rate": int(it.get("pointRate") or 1),
         }
 
 
@@ -116,17 +117,18 @@ class Ebay:
     """eBay Browse API (current listings). Needs an app from https://developer.ebay.com/ :
       EBAY_CLIENT_ID      App ID (Client ID), Production keyset
       EBAY_CLIENT_SECRET  Cert ID (Client Secret)
+    One token works for every marketplace (eBay.com, .co.uk, .com.au, .de, .ca).
     """
 
     TOKEN_URL = "https://api.ebay.com/identity/v1/oauth2/token"
     SEARCH_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search"
 
-    def __init__(self, marketplace="EBAY_US"):
+    def __init__(self):
         self.client_id = os.environ.get("EBAY_CLIENT_ID", "")
         self.client_secret = os.environ.get("EBAY_CLIENT_SECRET", "")
-        self.marketplace = marketplace
         self._token = None
         self._token_exp = 0
+        self.calls = 0
 
     def _get_token(self):
         if self._token and time.time() < self._token_exp - 60:
@@ -148,32 +150,34 @@ class Ebay:
         self._token_exp = time.time() + int(j.get("expires_in", 7200))
         return self._token
 
-    def search(self, q, price_usd=None, condition="ANY", location_jp=False, limit=100,
-               ship_to="US"):
+    def search(self, q, marketplace="EBAY_US", currency="USD", ship_to="US", price_range=None,
+               condition="ANY", location_jp=False, limit=100):
         filters = ["buyingOptions:{FIXED_PRICE}"]
-        if price_usd:
-            filters.append(f"price:[{price_usd[0]}..{price_usd[1]}]")
-            filters.append("priceCurrency:USD")
+        if price_range:
+            filters.append(f"price:[{price_range[0]:.0f}..{price_range[1]:.0f}]")
+            filters.append(f"priceCurrency:{currency}")
         if condition in ("NEW", "USED"):
             filters.append(f"conditions:{{{condition}}}")
         if location_jp:
             filters.append("itemLocationCountry:JP")
         headers = {
             "Authorization": f"Bearer {self._get_token()}",
-            "X-EBAY-C-MARKETPLACE-ID": self.marketplace,
-            # Ask for shipping costs as seen by a buyer in the destination country
+            "X-EBAY-C-MARKETPLACE-ID": marketplace,
+            # shipping costs as seen by a buyer in the destination country
             "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country%3D{ship_to}",
             **UA,
         }
         r = requests.get(self.SEARCH_URL, headers=headers,
                          params={"q": q, "limit": min(limit, 200), "filter": ",".join(filters)},
                          timeout=25)
+        self.calls += 1
         r.raise_for_status()
         return [self._normalise(i) for i in r.json().get("itemSummaries", [])]
 
     @staticmethod
     def _normalise(i):
-        price = float((i.get("price") or {}).get("value") or 0)
+        p = i.get("price") or {}
+        price = float(p.get("value") or 0)
         ship = None
         for opt in i.get("shippingOptions") or []:
             cost = (opt.get("shippingCost") or {}).get("value")
@@ -183,9 +187,10 @@ class Ebay:
         return {
             "source": "ebay",
             "title": i.get("title", ""),
-            "price_usd": price,
-            "shipping_usd": ship,
-            "total_usd": price + (ship or 0),
+            "price": price,
+            "shipping": ship,
+            "total": price + (ship or 0),
+            "currency": p.get("currency"),
             "url": i.get("itemWebUrl"),
             "condition": i.get("condition"),
             "country": (i.get("itemLocation") or {}).get("country"),
@@ -194,26 +199,31 @@ class Ebay:
 
 
 class MockEbay:
-    def __init__(self, *_ , **__):
+    def __init__(self):
         self.data = json.loads((FIXTURES / "ebay.json").read_text(encoding="utf-8"))
+        self.calls = 0
 
-    def search(self, q, location_jp=False, **_):
-        items = [Ebay._normalise(i) for i in self.data.get(q, [])]
+    def search(self, q, marketplace="EBAY_US", location_jp=False, **_):
+        self.calls += 1
+        items = [Ebay._normalise(i) for i in self.data.get(marketplace, {}).get(q, [])]
         return [i for i in items if i["country"] == "JP"] if location_jp else items
 
 
 # ---------------------------------------------------------------- FX
-def usd_jpy(fallback: float, mock: bool = False):
-    """Returns (rate, source). Uses Frankfurter (ECB reference rates); falls back to config."""
+def jpy_rates(fallback: dict, mock: bool = False):
+    """Yen per 1 unit of each currency, e.g. {"USD": 152.3, "GBP": 198.1, ...}.
+    Uses Frankfurter (European Central Bank reference rates); falls back to config.yaml."""
     if mock:
-        return fallback, "sample"
-    for url in ("https://api.frankfurter.dev/v1/latest?base=USD&symbols=JPY",
-                "https://api.frankfurter.app/latest?from=USD&to=JPY"):
+        return dict(fallback), "sample"
+    curs = [c for c in fallback if c != "JPY"]
+    for url in ("https://api.frankfurter.dev/v1/latest", "https://api.frankfurter.app/latest"):
         try:
-            r = requests.get(url, timeout=15, headers=UA)
+            r = requests.get(url, params={"base": "JPY", "symbols": ",".join(curs)}, timeout=15, headers=UA)
             r.raise_for_status()
             j = r.json()
-            return float(j["rates"]["JPY"]), f"ECB via Frankfurter ({j.get('date')})"
+            rates = {c: round(1 / float(v), 4) for c, v in j["rates"].items()}
+            if all(c in rates for c in curs):
+                return rates, f"ECB via Frankfurter ({j.get('date')})"
         except Exception:
             continue
-    return fallback, "fallback (config.yaml)"
+    return dict(fallback), "fallback (config.yaml)"

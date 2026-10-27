@@ -46,22 +46,28 @@ for rq, eq, titles, base_jpy, etitle, base_usd, jp_share in SPEC:
             "postageFlag": random.choice([0, 0, 1]),
             "mediumImageUrls": [],
             "itemCode": f"sample-shop-{i}:{rq[:4]}{i}",
+            "pointRate": random.choice([1, 1, 1, 2, 5, 10]),
         })
     rak[rq] = items
-    listings = []
-    for i in range(14):
-        jp = random.random() < jp_share
-        price = round(base_usd * random.uniform(0.85, 1.25), 2)
-        listings.append({
-            "title": etitle + (" (sample)" if i % 3 == 0 else ""),
-            "price": {"value": str(price), "currency": "USD"},
-            "shippingOptions": [{"shippingCost": {"value": "0.00" if jp else str(round(random.uniform(8, 20), 2)),
-                                                  "currency": "USD"}}],
-            "itemWebUrl": "https://www.ebay.com/sch/i.html?_nkw=" + eq.replace(" ", "+"),
-            "condition": "New",
-            "itemLocation": {"country": "JP" if jp else random.choice(["US", "US", "GB", "CN"])},
-        })
-    eb[eq] = listings
+    # (marketplace, currency, units per USD, local price multiplier, how many listings)
+    markets = [("EBAY_US", "USD", 1.0, 1.0, 14), ("EBAY_GB", "GBP", 0.78, 1.08, 8),
+               ("EBAY_AU", "AUD", 1.52, 1.12, 7), ("EBAY_DE", "EUR", 0.92, 1.0, 6),
+               ("EBAY_CA", "CAD", 1.38, 1.05, random.choice([2, 6]))]
+    for mk, cur, per_usd, mult, n in markets:
+        listings = []
+        for i in range(n):
+            jp = random.random() < jp_share
+            price = round(base_usd * per_usd * mult * random.uniform(0.85, 1.25), 2)
+            listings.append({
+                "title": etitle + (" (sample)" if i % 3 == 0 else ""),
+                "price": {"value": str(price), "currency": cur},
+                "shippingOptions": [{"shippingCost": {"value": "0.00" if jp else str(round(random.uniform(8, 20) * per_usd, 2)),
+                                                      "currency": cur}}],
+                "itemWebUrl": "https://www.ebay.com/sch/i.html?_nkw=" + eq.replace(" ", "+"),
+                "condition": "New",
+                "itemLocation": {"country": "JP" if jp else random.choice(["US", "US", "GB", "CN"])},
+            })
+        eb.setdefault(mk, {})[eq] = listings
 
 (HERE / "rakuten.json").write_text(json.dumps(rak, ensure_ascii=False, indent=1), encoding="utf-8")
 (HERE / "ebay.json").write_text(json.dumps(eb, ensure_ascii=False, indent=1), encoding="utf-8")

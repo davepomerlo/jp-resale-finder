@@ -99,10 +99,11 @@ tr.total td { font-weight: 700; border-bottom: 0; }
 .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
 .section { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
 .section h3 { margin: 0 0 6px; font-size: 15px; }
-.kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13.5px; }
+.kv { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 4px 12px; font-size: 13.5px; }
 .kv span:nth-child(odd) { color: var(--muted); }
 footer { max-width: 860px; margin: 0 auto; padding: 8px 16px 40px; color: var(--muted); font-size: 12px; }
 .filters label { min-width: 0; }
 .filters select, .filters input[type=number], .filters input[type=search] { width: 100%; min-width: 0; }
 .filters .check { grid-column: span 1; }
 @media (max-width: 420px) { .filters .check { grid-column: 1 / -1; } }
+.banner.sale { background: var(--accent); color: #fff; }

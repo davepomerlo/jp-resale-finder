@@ -1,10 +1,12 @@
 # Japan Resale Finder
 
 A personal research tool. It checks 楽天市場 (Rakuten Ichiba) prices for items on your watchlist, compares them with
-eBay, and estimates your profit after fees, shipping and duty for each country. It also flags licence, legal and
-shipping problems, such as knives to the UK.
+each country's own eBay site (eBay.com, .ca, .co.uk, .com.au, .de) and converts everything to yen. It then estimates
+your profit after fees, shipping, duty and 楽天ポイント (Rakuten points) for each country. It also flags licence, legal
+and shipping problems, such as knives to the UK, and can send push alerts to your phone.
 
-- **Scanner** (`scanner/`): Python. GitHub Actions runs it every day at about 05:00 JST.
+- **Scanner** (`scanner/`): Python. GitHub Actions runs it at 05:07 and 20:07 JST every day, and hourly from 20:37 to 23:37
+  JST while a Rakuten sale is on.
 - **App** (`docs/`): a phone-friendly web app on GitHub Pages. You can install it on Android from Chrome.
 
 > **Until you add API keys, the app shows SAMPLE (made-up) data.** It says so in a yellow banner.
@@ -37,7 +39,18 @@ RAKUTEN_ORIGIN        https://davepomerlo.github.io
 EBAY_CLIENT_ID
 EBAY_CLIENT_SECRET
 DEEPL_API_KEY         (optional)
+NTFY_TOPIC            (optional, for push alerts — see below)
 ```
+
+### Push alerts (optional)
+1. Install **ntfy** from the Google Play Store.
+2. In the app, tap **+** and subscribe to a long random topic name, e.g. `dave-resale-7Kq2xP9w`.
+   Anyone who knows the name can read the alerts, so don't use anything guessable.
+3. Save the same name as the `NTFY_TOPIC` secret.
+
+You'll get an alert when a listing goes over the thresholds in `config.yaml` (`alerts:`), which default to ¥5,000 profit
+and a 15% margin. You get at most 5 alerts per scan, and the same listing won't alert again unless its profit rises
+20% or more.
 
 ### 4. Turn on the website
 Go to **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `/docs`**.
@@ -59,6 +72,11 @@ Open the app URL in Chrome on Android, then **⋮ → Add to Home screen / Insta
 | Add or remove items to track | `scanner/watchlist.yaml` (the GitHub mobile app works for this) |
 | Match fees and shipping to your real invoices | `scanner/config.yaml` |
 | Add or change legal and shipping warnings | `scanner/rules.yaml` |
+| Add お買い物マラソン (Shopping Marathon) or other sale dates for hourly scans | `config.yaml` → `sales: windows` |
+| Count your SPU (Super Point Up) or 買いまわり (shop-hopping) bonus | `config.yaml` → `points: extra_rate_pct` |
+
+楽天スーパーSALE (Rakuten Super Sale) is detected automatically: the 4th to the 11th of March, June, September and
+December. Rakuten Black Friday 2026 is pre-filled as a **prediction**, so correct it once the dates are announced.
 
 **Before you buy anything, tap "Check eBay sold prices" on the card.** The profit estimate is based on current
 *asking* prices, because eBay limits its sold-price data to approved partners.
@@ -66,20 +84,25 @@ Open the app URL in Chrome on Android, then **⋮ → Add to Home screen / Insta
 ## How profit is estimated
 
 ```
-sell price  = median of current eBay listings from Japan-based sellers (or all sellers if fewer than 3) × 97%
+sell price  = median of current listings on that country's eBay site from Japan-based sellers
+              (or all sellers if fewer than 3) × 97%, converted to yen at the day's ECB rate.
+              If the local site has fewer than 3 listings, the eBay.com price is used instead.
 profit      = sell price in yen − currency conversion cost
               − eBay fees (final value fee + international fee + per-order fee, plus tax on fees)
               − EMS shipping (by weight and zone; switches to the new Japan Post rates on 1 Feb 2027)
               − US duty you prepay (12.5%, US only)
-              − Rakuten price − domestic postage (if not included) − packaging
+              − Rakuten price + 楽天ポイント (Rakuten points: shop rate + your extra rate, on the ex-tax price)
+              − domestic postage (if not included) − packaging
 ```
 
 The rates marked ASSUMPTION in `config.yaml`, such as the international fee and tax on fees, should be checked
 against your first eBay invoice.
 
 ## Limits worth knowing
-- Comparison prices come from eBay.com. Other countries are assumed to sell at the same price, with their own
-  shipping and duty applied.
+- Each scan makes about 10 eBay calls per watchlist item (5 sites × 2 searches). eBay's default Browse API allowance
+  is several thousand calls a day, which covers dozens of items even with hourly sale scans.
+- Points during 買いまわり (shop-hopping) only count if you actually buy from enough shops, so keep `extra_rate_pct`
+  realistic.
 - Matching relies on keywords, so tune `must_include` and `exclude` when you see wrong items.
 - Rakuten mostly sells **new** items from shops. Even so, a lawyer's guide says new items bought at retail for resale can
   count as 古物 (secondhand goods). Treat the 古物商許可 (secondhand dealer licence) as needed.
