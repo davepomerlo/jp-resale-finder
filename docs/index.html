@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Japan Resale Finder</title>
+<meta name="theme-color" content="#14213d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">円→$</span>
+    <div>
+      <h1>Japan Resale Finder</h1>
+      <p id="status" class="status">Loading…</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="deals">Deals</button>
+    <button class="tab" data-tab="watch">Watchlist</button>
+    <button class="tab" data-tab="rules">Rules</button>
+    <button class="tab" data-tab="costs">Costs</button>
+  </nav>
+</header>
+
+<div id="sampleBanner" class="banner" hidden>
+  SAMPLE DATA — made-up listings for testing. Add your API keys to see real results.
+</div>
+
+<main>
+  <!-- DEALS -->
+  <section id="tab-deals" class="panel active">
+    <form id="filters" class="filters" onsubmit="return false">
+      <label>Category
+        <select id="fCat"><option value="">All</option></select>
+      </label>
+      <label>Ship to
+        <select id="fDest"><option value="best">Best allowed</option></select>
+      </label>
+      <label>Min profit ¥
+        <input id="fProfit" type="number" inputmode="numeric" step="500" value="0">
+      </label>
+      <label>Min margin %
+        <input id="fMargin" type="number" inputmode="numeric" step="5" value="0">
+      </label>
+      <label>Sort
+        <select id="fSort">
+          <option value="profit">Profit ¥</option>
+          <option value="margin">Margin %</option>
+          <option value="roi">Return on cost</option>
+          <option value="buy">Buy price</option>
+        </select>
+      </label>
+      <label>Search
+        <input id="fText" type="search" placeholder="e.g. UX10, BOSS">
+      </label>
+      <label class="check"><input id="fLoss" type="checkbox" checked> Hide losses</label>
+      <label class="check"><input id="fBlock" type="checkbox"> Hide items with 🚫 warnings</label>
+    </form>
+    <p id="count" class="count"></p>
+    <div id="deals" class="cards"></div>
+  </section>
+
+  <!-- WATCHLIST -->
+  <section id="tab-watch" class="panel">
+    <p class="hint">Edit <code>scanner/watchlist.yaml</code> on GitHub to add or change items. The next scan picks it up.</p>
+    <div id="watch" class="cards"></div>
+  </section>
+
+  <!-- RULES -->
+  <section id="tab-rules" class="panel">
+    <p class="hint">A checklist, not legal advice. Rules change — confirm licence questions with your police station's 生活安全課 (community safety division) and tax questions with the 税務署 (tax office).</p>
+    <div id="rules"></div>
+  </section>
+
+  <!-- COSTS -->
+  <section id="tab-costs" class="panel">
+    <p class="hint">These assumptions drive every profit figure. Change them in <code>scanner/config.yaml</code> to match your real eBay invoices and shipping receipts.</p>
+    <div id="costs"></div>
+  </section>
+</main>
+
+<footer>
+  <p>Japanese prices: <a href="https://webservice.rakuten.co.jp/" target="_blank" rel="noopener">Supported by Rakuten Developers</a>. Comparison prices: eBay Browse API (current listings, not sold prices). Not affiliated with Rakuten or eBay.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

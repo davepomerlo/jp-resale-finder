@@ -1,0 +1,4128 @@
+{
+ "generated_at": "2026-10-27T09:09:44+00:00",
+ "mode": "sample",
+ "fx": {
+  "usd_jpy": 150.0,
+  "source": "sample"
+ },
+ "translation": "sample",
+ "assumptions": {
+  "ebay": {
+   "marketplace": "EBAY_US",
+   "final_value_fee": 0.136,
+   "final_value_fee_by_category": {
+    "watch": 0.15,
+    "record": 0.153,
+    "cd_dvd": 0.153,
+    "book": 0.153
+   },
+   "per_order_fee_usd": 0.4,
+   "international_fee": 0.0165,
+   "fee_tax": 0.1,
+   "undercut": 0.97,
+   "min_jp_comps": 3
+  },
+  "fx_conversion_cost": 0.02,
+  "costs": {
+   "packaging_jpy": 300,
+   "rakuten_domestic_postage_jpy": 800
+  },
+  "shipping_service": "EMS",
+  "shipping_table_from": "2000-01-01"
+ },
+ "destinations": {
+  "US": {
+   "name": "United States",
+   "zone": 4,
+   "duty": 0.125,
+   "ddp_prepay_fee_jpy": 0
+  },
+  "CA": {
+   "name": "Canada",
+   "zone": 3,
+   "duty": 0.0
+  },
+  "GB": {
+   "name": "United Kingdom",
+   "zone": 3,
+   "duty": 0.0
+  },
+  "AU": {
+   "name": "Australia",
+   "zone": 3,
+   "duty": 0.0
+  },
+  "DE": {
+   "name": "Germany (EU)",
+   "zone": 3,
+   "duty": 0.0
+  }
+ },
+ "global_notes": [
+  {
+   "level": "info",
+   "text": "古物商許可 (secondhand dealer licence) needed to buy used goods for resale. Even unused items bought at retail can count as 古物 (secondhand goods) — confirm with your police station.",
+   "source": "https://ayusawa-partners.jp/column/kobutsushou-shinsei-guide"
+  }
+ ],
+ "rules": {
+  "categories": {
+   "knife": {
+    "label": "Kitchen knives / 包丁 (kitchen knives)",
+    "kobutsu": "道具類 (tools & goods) — confirm at the police station",
+    "blocked_destinations": {
+     "GB": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    "warnings": [
+     {
+      "level": "caution",
+      "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+      "source": "https://www.post.japanpost.jp/question/oversea/181.html"
+     },
+     {
+      "level": "caution",
+      "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+      "source": "https://www.post.japanpost.jp/int/use/"
+     }
+    ]
+   },
+   "pedal": {
+    "label": "Effects pedals / エフェクター (effects units)",
+    "kobutsu": "機械工具類 (machinery & tools — includes electrical goods)",
+    "warnings": [
+     {
+      "level": "info",
+      "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly."
+     }
+    ]
+   },
+   "record": {
+    "label": "Vinyl records / レコード (records)",
+    "kobutsu": "道具類 (tools & goods)",
+    "warnings": []
+   },
+   "cd_dvd": {
+    "label": "CDs / DVDs",
+    "kobutsu": "道具類 (tools & goods)",
+    "id_check_any_price": true
+   },
+   "game": {
+    "label": "Video games / ゲームソフト (game software)",
+    "kobutsu": "道具類 (tools & goods)",
+    "id_check_any_price": true
+   },
+   "book": {
+    "label": "Books & manga / 書籍 (books)",
+    "kobutsu": "書籍 (books)",
+    "id_check_any_price": true
+   },
+   "fishing": {
+    "label": "Fishing tackle / 釣具 (fishing gear)",
+    "kobutsu": "道具類 (tools & goods)",
+    "warnings": [
+     {
+      "level": "info",
+      "text": "Cover lure hooks for shipping."
+     }
+    ]
+   },
+   "watch": {
+    "label": "Watches / 時計 (watches)",
+    "kobutsu": "時計・宝飾品類 (watches & jewellery)",
+    "warnings": [
+     {
+      "level": "caution",
+      "text": "High counterfeit risk — buy only from trusted shops. eBay fee for watches is higher (set in config.yaml)."
+     },
+     {
+      "level": "caution",
+      "text": "Batteries inside: check Japan Post rules for devices containing batteries."
+     }
+    ]
+   },
+   "kitchenware": {
+    "label": "Kitchenware / 台所用品 (kitchen goods)",
+    "kobutsu": "道具類 (tools & goods)",
+    "warnings": [
+     {
+      "level": "info",
+      "text": "Heavy or fragile — shipping eats margin. Double-box ceramics and cast iron."
+     }
+    ]
+   },
+   "kimono": {
+    "label": "Kimono & obi / 着物・帯 (kimono & sashes)",
+    "kobutsu": "衣類 (clothing)",
+    "warnings": []
+   },
+   "cards": {
+    "label": "Trading cards / トレカ (trading cards)",
+    "kobutsu": "道具類 (tools & goods)",
+    "warnings": [
+     {
+      "level": "caution",
+      "text": "Fakes and resealed packs are common — buy from established shops."
+     }
+    ]
+   }
+  },
+  "keywords": [
+   {
+    "match": [
+     "電池",
+     "バッテリー",
+     "battery",
+     "リチウム"
+    ],
+    "level": "caution",
+    "text": "電池 (battery) mentioned — remove batteries before posting; lithium batteries are restricted in air mail."
+   },
+   {
+    "match": [
+     "ジャンク",
+     "junk"
+    ],
+    "level": "caution",
+    "text": "ジャンク (junk / sold as-is) — may be faulty. Test before you list."
+   },
+   {
+    "match": [
+     "並行輸入",
+     "海外版",
+     "輸入品",
+     "逆輸入"
+    ],
+    "level": "caution",
+    "text": "並行輸入 / 海外版 (parallel import / overseas version) — not Japan-only, so little price edge abroad."
+   },
+   {
+    "match": [
+     "中古",
+     "美品",
+     "used"
+    ],
+    "level": "info",
+    "text": "中古 (used) item — 古物商許可 (secondhand dealer licence) required to buy for resale."
+   },
+   {
+    "match": [
+     "酒",
+     "ウイスキー",
+     "日本酒",
+     "焼酎",
+     "whisky",
+     "sake"
+    ],
+    "level": "block",
+    "text": "Alcohol — selling needs a 酒類販売業免許 (liquor sales licence) and many carriers restrict it."
+   },
+   {
+    "match": [
+     "食品",
+     "お菓子",
+     "菓子",
+     "調味料"
+    ],
+    "level": "block",
+    "text": "Food — import rules vary widely by country. Avoid."
+   },
+   {
+    "match": [
+     "化粧品",
+     "コスメ",
+     "cosmetics"
+    ],
+    "level": "block",
+    "text": "Cosmetics — ingredient and import rules vary. Avoid."
+   },
+   {
+    "match": [
+     "日本刀",
+     "模造刀",
+     "刀剣",
+     "katana"
+    ],
+    "level": "block",
+    "text": "Swords / replica swords — export and import heavily restricted."
+   },
+   {
+    "match": [
+     "ACアダプター",
+     "アダプター付",
+     "adapter included"
+    ],
+    "level": "info",
+    "text": "Japanese 100V adapter included — mention voltage in your listing."
+   },
+   {
+    "match": [
+     "限定",
+     "limited"
+    ],
+    "level": "info",
+    "text": "限定 (limited edition) — check eBay sold prices; limited runs can sell well above normal."
+   }
+  ],
+  "destinations": {
+   "US": [
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/"
+    }
+   ]
+  }
+ },
+ "items": [
+  {
+   "id": "misono-ux10-gyuto-240",
+   "name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "rakuten": "ミソノ UX10 牛刀 24cm",
+   "ebay": "Misono UX10 gyuto 240mm",
+   "label": "Kitchen knives / 包丁 (kitchen knives)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/%E3%83%9F%E3%82%BD%E3%83%8E+UX10+%E7%89%9B%E5%88%80+24cm/",
+   "comps": {
+    "basis": "Japan-based sellers",
+    "count": 11,
+    "median_usd": 353.35,
+    "p25_usd": 327.78,
+    "p75_usd": 363.82,
+    "jp_count": 11,
+    "all_count": 14,
+    "non_jp_count": 3,
+    "examples": [
+     {
+      "title": "Misono UX10 Gyuto 240mm Japanese Chef Knife Made in Japan (sample)",
+      "total_usd": 297.81,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Misono UX10 Gyuto 240mm Japanese Chef Knife Made in Japan (sample)",
+      "total_usd": 318.04,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Misono UX10 Gyuto 240mm Japanese Chef Knife Made in Japan",
+      "total_usd": 324.98,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Misono UX10 Gyuto 240mm Japanese Chef Knife Made in Japan (sample)",
+      "total_usd": 330.59,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Misono UX10 Gyuto 240mm Japanese Chef Knife Made in Japan (sample)",
+      "total_usd": 330.78,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Misono+UX10+gyuto+240mm",
+      "country": "JP",
+      "condition": "New"
+     }
+    ]
+   },
+   "sale_usd": 342.75,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "ok"
+  },
+  {
+   "id": "tojiro-dp-gyuto-210",
+   "name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "rakuten": "藤次郎 DP 牛刀 210mm",
+   "ebay": "Tojiro DP gyuto 210mm",
+   "label": "Kitchen knives / 包丁 (kitchen knives)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/%E8%97%A4%E6%AC%A1%E9%83%8E+DP+%E7%89%9B%E5%88%80+210mm/",
+   "comps": {
+    "basis": "Japan-based sellers",
+    "count": 9,
+    "median_usd": 119.72,
+    "p25_usd": 112.47,
+    "p75_usd": 137.44,
+    "jp_count": 9,
+    "all_count": 14,
+    "non_jp_count": 5,
+    "examples": [
+     {
+      "title": "Tojiro DP Gyuto 210mm F-808 Chef Knife Japan (sample)",
+      "total_usd": 102.2,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Tojiro DP Gyuto 210mm F-808 Chef Knife Japan (sample)",
+      "total_usd": 109.99,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Tojiro DP Gyuto 210mm F-808 Chef Knife Japan (sample)",
+      "total_usd": 112.47,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Tojiro DP Gyuto 210mm F-808 Chef Knife Japan",
+      "total_usd": 115.34,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Tojiro DP Gyuto 210mm F-808 Chef Knife Japan",
+      "total_usd": 119.72,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Tojiro+DP+gyuto+210mm",
+      "country": "JP",
+      "condition": "New"
+     }
+    ]
+   },
+   "sale_usd": 116.13,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "ok"
+  },
+  {
+   "id": "boss-sd1w-waza",
+   "name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "rakuten": "BOSS SD-1W",
+   "ebay": "BOSS SD-1W Waza Craft",
+   "label": "Effects pedals / エフェクター (effects units)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=BOSS+SD-1W+Waza+Craft",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=BOSS+SD-1W+Waza+Craft&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/BOSS+SD-1W/",
+   "comps": {
+    "basis": "all sellers",
+    "count": 14,
+    "median_usd": 156.97,
+    "p25_usd": 146.43,
+    "p75_usd": 170.55,
+    "jp_count": 2,
+    "all_count": 14,
+    "non_jp_count": 12,
+    "examples": [
+     {
+      "title": "BOSS SD-1W Waza Craft Super Overdrive Guitar Effect Pedal (sample)",
+      "total_usd": 145.55,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=BOSS+SD-1W+Waza+Craft",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "BOSS SD-1W Waza Craft Super Overdrive Guitar Effect Pedal",
+      "total_usd": 156.65,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=BOSS+SD-1W+Waza+Craft",
+      "country": "JP",
+      "condition": "New"
+     }
+    ]
+   },
+   "sale_usd": 152.26,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "ok"
+  },
+  {
+   "id": "maxon-od808",
+   "name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "rakuten": "Maxon OD808",
+   "ebay": "Maxon OD808 overdrive",
+   "label": "Effects pedals / エフェクター (effects units)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/Maxon+OD808/",
+   "comps": {
+    "basis": "Japan-based sellers",
+    "count": 9,
+    "median_usd": 176.18,
+    "p25_usd": 163.38,
+    "p75_usd": 194.04,
+    "jp_count": 9,
+    "all_count": 14,
+    "non_jp_count": 5,
+    "examples": [
+     {
+      "title": "Maxon OD808 Overdrive Pedal Made in Japan (sample)",
+      "total_usd": 148.89,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Maxon OD808 Overdrive Pedal Made in Japan",
+      "total_usd": 154.29,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Maxon OD808 Overdrive Pedal Made in Japan",
+      "total_usd": 163.38,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Maxon OD808 Overdrive Pedal Made in Japan",
+      "total_usd": 175.0,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Maxon OD808 Overdrive Pedal Made in Japan (sample)",
+      "total_usd": 176.18,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Maxon+OD808+overdrive",
+      "country": "JP",
+      "condition": "New"
+     }
+    ]
+   },
+   "sale_usd": 170.89,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "ok"
+  },
+  {
+   "id": "shimano-stella-c3000",
+   "name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "rakuten": "シマノ ステラ C3000",
+   "ebay": "Shimano Stella C3000 JDM",
+   "label": "Fishing tackle / 釣具 (fishing gear)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/%E3%82%B7%E3%83%9E%E3%83%8E+%E3%82%B9%E3%83%86%E3%83%A9+C3000/",
+   "comps": {
+    "basis": "Japan-based sellers",
+    "count": 11,
+    "median_usd": 715.82,
+    "p25_usd": 618.1,
+    "p75_usd": 769.46,
+    "jp_count": 11,
+    "all_count": 14,
+    "non_jp_count": 3,
+    "examples": [
+     {
+      "title": "Shimano 22 Stella C3000XG Spinning Reel JDM New",
+      "total_usd": 575.32,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Shimano 22 Stella C3000XG Spinning Reel JDM New",
+      "total_usd": 579.14,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Shimano 22 Stella C3000XG Spinning Reel JDM New",
+      "total_usd": 598.45,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Shimano 22 Stella C3000XG Spinning Reel JDM New",
+      "total_usd": 637.74,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+      "country": "JP",
+      "condition": "New"
+     },
+     {
+      "title": "Shimano 22 Stella C3000XG Spinning Reel JDM New",
+      "total_usd": 680.52,
+      "url": "https://www.ebay.com/sch/i.html?_nkw=Shimano+Stella+C3000+JDM",
+      "country": "JP",
+      "condition": "New"
+     }
+    ]
+   },
+   "sale_usd": 694.35,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "ok"
+  },
+  {
+   "id": "nambu-tetsubin-1l",
+   "name": "Nambu cast-iron tetsubin kettle (~1L)",
+   "category": "kitchenware",
+   "rakuten": "南部鉄器 鉄瓶 1.0L",
+   "ebay": "Nambu tekki tetsubin cast iron kettle Japan",
+   "label": "Kitchenware / 台所用品 (kitchen goods)",
+   "active_url": "https://www.ebay.com/sch/i.html?_nkw=Nambu+tekki+tetsubin+cast+iron+kettle+Japan",
+   "sold_url": "https://www.ebay.com/sch/i.html?_nkw=Nambu+tekki+tetsubin+cast+iron+kettle+Japan&LH_Sold=1&LH_Complete=1",
+   "rakuten_search_url": "https://search.rakuten.co.jp/search/mall/%E5%8D%97%E9%83%A8%E9%89%84%E5%99%A8+%E9%89%84%E7%93%B6+1.0L/",
+   "comps": {
+    "basis": "none",
+    "count": 0,
+    "jp_count": 0,
+    "all_count": 0,
+    "non_jp_count": 0,
+    "examples": []
+   },
+   "sale_usd": null,
+   "rakuten_found": 10,
+   "rakuten_matched": 10,
+   "status": "no eBay comps"
+  }
+ ],
+ "opportunities": [
+  {
+   "id": "shimano-stella-c3000::sample-shop-7:シマノ 7",
+   "item_id": "shimano-stella-c3000",
+   "item_name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "title_ja": "シマノ 22ステラ C3000MHG",
+   "title_en": "Shimano 22 Stella C3000MHG",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-7/sample-39984/",
+   "shop": "サンプルショップ8 (sample shop)",
+   "buy_jpy": 64460,
+   "postage_included": true,
+   "sale_usd": 694.35,
+   "weight_g": 1200,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5990,
+     "duty_jpy": 13019,
+     "buy_jpy": 64460,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 763,
+     "margin": 0.0075,
+     "roi": 0.0118,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 64460,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14772,
+     "margin": 0.1447,
+     "roi": 0.2292,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 64460,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14772,
+     "margin": 0.1447,
+     "roi": 0.2292,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 64460,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14772,
+     "margin": 0.1447,
+     "roi": 0.2292,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 64460,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14772,
+     "margin": 0.1447,
+     "roi": 0.2292,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 102069,
+    "ebay_fees_jpy": 17538,
+    "shipping_jpy": 5000,
+    "duty_jpy": 0,
+    "buy_jpy": 64460,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 14772,
+    "margin": 0.1447,
+    "roi": 0.2292,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Cover lure hooks for shipping.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (14%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "shimano-stella-c3000::sample-shop-6:シマノ 6",
+   "item_id": "shimano-stella-c3000",
+   "item_name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "title_ja": "SHIMANO ステラ C3000SDH",
+   "title_en": "SHIMANO Stella C3000SDH",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-6/sample-85973/",
+   "shop": "サンプルショップ7 (sample shop)",
+   "buy_jpy": 65000,
+   "postage_included": true,
+   "sale_usd": 694.35,
+   "weight_g": 1200,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5990,
+     "duty_jpy": 13019,
+     "buy_jpy": 65000,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 223,
+     "margin": 0.0022,
+     "roi": 0.0034,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 65000,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14232,
+     "margin": 0.1394,
+     "roi": 0.219,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 65000,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14232,
+     "margin": 0.1394,
+     "roi": 0.219,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 65000,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14232,
+     "margin": 0.1394,
+     "roi": 0.219,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 65000,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 14232,
+     "margin": 0.1394,
+     "roi": 0.219,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 102069,
+    "ebay_fees_jpy": 17538,
+    "shipping_jpy": 5000,
+    "duty_jpy": 0,
+    "buy_jpy": 65000,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 14232,
+    "margin": 0.1394,
+    "roi": 0.219,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Cover lure hooks for shipping.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (14%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "shimano-stella-c3000::sample-shop-3:シマノ 3",
+   "item_id": "shimano-stella-c3000",
+   "item_name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "title_ja": "SHIMANO ステラ C3000SDH",
+   "title_en": "SHIMANO Stella C3000SDH",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-3/sample-85973/",
+   "shop": "サンプルショップ4 (sample shop)",
+   "buy_jpy": 67350,
+   "postage_included": true,
+   "sale_usd": 694.35,
+   "weight_g": 1200,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5990,
+     "duty_jpy": 13019,
+     "buy_jpy": 67350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -2127,
+     "margin": -0.0208,
+     "roi": -0.0316,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 67350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 11882,
+     "margin": 0.1164,
+     "roi": 0.1764,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 67350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 11882,
+     "margin": 0.1164,
+     "roi": 0.1764,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 67350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 11882,
+     "margin": 0.1164,
+     "roi": 0.1764,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 67350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 11882,
+     "margin": 0.1164,
+     "roi": 0.1764,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 102069,
+    "ebay_fees_jpy": 17538,
+    "shipping_jpy": 5000,
+    "duty_jpy": 0,
+    "buy_jpy": 67350,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 11882,
+    "margin": 0.1164,
+    "roi": 0.1764,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Cover lure hooks for shipping.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (12%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "misono-ux10-gyuto-240::sample-shop-3:ミソノ 3",
+   "item_id": "misono-ux10-gyuto-240",
+   "item_name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "title_ja": "Misono UX10 牛刀 240mm 日本製 包丁",
+   "title_en": "Misono UX10 Gyuto 240mm Made in Japan kitchen knife",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-3/sample-76014/",
+   "shop": "サンプルショップ4 (sample shop)",
+   "buy_jpy": 26930,
+   "postage_included": true,
+   "sale_usd": 342.75,
+   "weight_g": 800,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 4740,
+     "duty_jpy": 6427,
+     "buy_jpy": 26930,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 3297,
+     "margin": 0.0654,
+     "roi": 0.1224,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 26930,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10564,
+     "margin": 0.2097,
+     "roi": 0.3923,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 26930,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10564,
+     "margin": 0.2097,
+     "roi": 0.3923,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 26930,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10564,
+     "margin": 0.2097,
+     "roi": 0.3923,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 26930,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10564,
+     "margin": 0.2097,
+     "roi": 0.3923,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 50384,
+    "ebay_fees_jpy": 8690,
+    "shipping_jpy": 3900,
+    "duty_jpy": 0,
+    "buy_jpy": 26930,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 10564,
+    "margin": 0.2097,
+    "roi": 0.3923,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "shimano-stella-c3000::sample-shop-2:シマノ 2",
+   "item_id": "shimano-stella-c3000",
+   "item_name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "title_ja": "シマノ 22 ステラ C3000XG スピニングリール",
+   "title_en": "Shimano 22 Stella C3000XG spinning reel",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-2/sample-8536/",
+   "shop": "サンプルショップ3 (sample shop)",
+   "buy_jpy": 68130,
+   "postage_included": false,
+   "sale_usd": 694.35,
+   "weight_g": 1200,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5990,
+     "duty_jpy": 13019,
+     "buy_jpy": 68130,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -3707,
+     "margin": -0.0363,
+     "roi": -0.0538,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 68130,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 10302,
+     "margin": 0.1009,
+     "roi": 0.1495,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 68130,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 10302,
+     "margin": 0.1009,
+     "roi": 0.1495,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 68130,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 10302,
+     "margin": 0.1009,
+     "roi": 0.1495,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 68130,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 10302,
+     "margin": 0.1009,
+     "roi": 0.1495,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 102069,
+    "ebay_fees_jpy": 17538,
+    "shipping_jpy": 5000,
+    "duty_jpy": 0,
+    "buy_jpy": 68130,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": 10302,
+    "margin": 0.1009,
+    "roi": 0.1495,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Cover lure hooks for shipping.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (10%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "misono-ux10-gyuto-240::sample-shop-4:ミソノ 4",
+   "item_id": "misono-ux10-gyuto-240",
+   "item_name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "title_ja": "【送料無料】ミソノ UX10 牛刀 24cm 箱付き",
+   "title_en": "[Free shipping] Misono UX10 Gyuto 24cm with box",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-4/sample-11458/",
+   "shop": "サンプルショップ5 (sample shop)",
+   "buy_jpy": 27430,
+   "postage_included": true,
+   "sale_usd": 342.75,
+   "weight_g": 800,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 4740,
+     "duty_jpy": 6427,
+     "buy_jpy": 27430,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 2797,
+     "margin": 0.0555,
+     "roi": 0.102,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27430,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10064,
+     "margin": 0.1997,
+     "roi": 0.3669,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27430,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10064,
+     "margin": 0.1997,
+     "roi": 0.3669,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27430,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10064,
+     "margin": 0.1997,
+     "roi": 0.3669,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27430,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 10064,
+     "margin": 0.1997,
+     "roi": 0.3669,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 50384,
+    "ebay_fees_jpy": 8690,
+    "shipping_jpy": 3900,
+    "duty_jpy": 0,
+    "buy_jpy": 27430,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 10064,
+    "margin": 0.1997,
+    "roi": 0.3669,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "misono-ux10-gyuto-240::sample-shop-5:ミソノ 5",
+   "item_id": "misono-ux10-gyuto-240",
+   "item_name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "title_ja": "【送料無料】ミソノ UX10 牛刀 24cm 箱付き",
+   "title_en": "[Free shipping] Misono UX10 Gyuto 24cm with box",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-5/sample-11458/",
+   "shop": "サンプルショップ6 (sample shop)",
+   "buy_jpy": 27260,
+   "postage_included": false,
+   "sale_usd": 342.75,
+   "weight_g": 800,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 4740,
+     "duty_jpy": 6427,
+     "buy_jpy": 27260,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 2167,
+     "margin": 0.043,
+     "roi": 0.0772,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27260,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9434,
+     "margin": 0.1872,
+     "roi": 0.3362,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27260,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9434,
+     "margin": 0.1872,
+     "roi": 0.3362,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27260,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9434,
+     "margin": 0.1872,
+     "roi": 0.3362,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27260,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9434,
+     "margin": 0.1872,
+     "roi": 0.3362,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 50384,
+    "ebay_fees_jpy": 8690,
+    "shipping_jpy": 3900,
+    "duty_jpy": 0,
+    "buy_jpy": 27260,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": 9434,
+    "margin": 0.1872,
+    "roi": 0.3362,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "misono-ux10-gyuto-240::sample-shop-1:ミソノ 1",
+   "item_id": "misono-ux10-gyuto-240",
+   "item_name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "title_ja": "ミソノ UX10 牛刀 24cm No.713 スウェーデン鋼",
+   "title_en": "Misono UX10 Gyuto 24cm No.713 Swedish steel",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-1/sample-91096/",
+   "shop": "サンプルショップ2 (sample shop)",
+   "buy_jpy": 27470,
+   "postage_included": false,
+   "sale_usd": 342.75,
+   "weight_g": 800,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 4740,
+     "duty_jpy": 6427,
+     "buy_jpy": 27470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 1957,
+     "margin": 0.0388,
+     "roi": 0.0692,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9224,
+     "margin": 0.1831,
+     "roi": 0.3263,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9224,
+     "margin": 0.1831,
+     "roi": 0.3263,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9224,
+     "margin": 0.1831,
+     "roi": 0.3263,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 27470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": 9224,
+     "margin": 0.1831,
+     "roi": 0.3263,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 50384,
+    "ebay_fees_jpy": 8690,
+    "shipping_jpy": 3900,
+    "duty_jpy": 0,
+    "buy_jpy": 27470,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": 9224,
+    "margin": 0.1831,
+    "roi": 0.3263,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "misono-ux10-gyuto-240::sample-shop-9:ミソノ 9",
+   "item_id": "misono-ux10-gyuto-240",
+   "item_name": "Misono UX10 Gyuto 240mm",
+   "category": "knife",
+   "title_ja": "Misono UX10 牛刀 240mm 日本製 包丁",
+   "title_en": "Misono UX10 Gyuto 240mm Made in Japan kitchen knife",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-9/sample-76014/",
+   "shop": "サンプルショップ10 (sample shop)",
+   "buy_jpy": 30830,
+   "postage_included": true,
+   "sale_usd": 342.75,
+   "weight_g": 800,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 4740,
+     "duty_jpy": 6427,
+     "buy_jpy": 30830,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -603,
+     "margin": -0.012,
+     "roi": -0.0196,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 30830,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 6664,
+     "margin": 0.1323,
+     "roi": 0.2161,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 30830,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 6664,
+     "margin": 0.1323,
+     "roi": 0.2161,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 30830,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 6664,
+     "margin": 0.1323,
+     "roi": 0.2161,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 50384,
+     "ebay_fees_jpy": 8690,
+     "shipping_jpy": 3900,
+     "duty_jpy": 0,
+     "buy_jpy": 30830,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 6664,
+     "margin": 0.1323,
+     "roi": 0.2161,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 50384,
+    "ebay_fees_jpy": 8690,
+    "shipping_jpy": 3900,
+    "duty_jpy": 0,
+    "buy_jpy": 30830,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 6664,
+    "margin": 0.1323,
+    "roi": 0.2161,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (13%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "maxon-od808::sample-shop-0:Maxo0",
+   "item_id": "maxon-od808",
+   "item_name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "title_ja": "MAXON OD808 オーバードライブ エフェクター 電池付",
+   "title_en": "MAXON OD808 overdrive pedal, battery included",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-0/sample-45320/",
+   "shop": "サンプルショップ1 (sample shop)",
+   "buy_jpy": 13750,
+   "postage_included": true,
+   "sale_usd": 170.89,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 5020,
+     "duty_jpy": 3204,
+     "buy_jpy": 13750,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -1519,
+     "margin": -0.0605,
+     "roi": -0.1105,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 13750,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 2555,
+     "margin": 0.1017,
+     "roi": 0.1858,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 13750,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 2555,
+     "margin": 0.1017,
+     "roi": 0.1858,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 13750,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 2555,
+     "margin": 0.1017,
+     "roi": 0.1858,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 13750,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 2555,
+     "margin": 0.1017,
+     "roi": 0.1858,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 25121,
+    "ebay_fees_jpy": 4366,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 13750,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 2555,
+    "margin": 0.1017,
+    "roi": 0.1858,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "scope": "keyword",
+     "text": "電池 (battery) mentioned — remove batteries before posting; lithium batteries are restricted in air mail."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (10%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "tojiro-dp-gyuto-210::sample-shop-9:藤次郎 9",
+   "item_id": "tojiro-dp-gyuto-210",
+   "item_name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "title_ja": "TOJIRO DP 牛刀 21cm 日本製",
+   "title_en": "TOJIRO DP Gyuto 21cm Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-9/sample-90187/",
+   "shop": "サンプルショップ10 (sample shop)",
+   "buy_jpy": 9150,
+   "postage_included": true,
+   "sale_usd": 116.13,
+   "weight_g": 700,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 4460,
+     "duty_jpy": 2177,
+     "buy_jpy": 9150,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -2004,
+     "margin": -0.1174,
+     "roi": -0.2191,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9150,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 983,
+     "margin": 0.0576,
+     "roi": 0.1074,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9150,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 983,
+     "margin": 0.0576,
+     "roi": 0.1074,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9150,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 983,
+     "margin": 0.0576,
+     "roi": 0.1074,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9150,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 983,
+     "margin": 0.0576,
+     "roi": 0.1074,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 17071,
+    "ebay_fees_jpy": 2988,
+    "shipping_jpy": 3650,
+    "duty_jpy": 0,
+    "buy_jpy": 9150,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 983,
+    "margin": 0.0576,
+    "roi": 0.1074,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (6%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "maxon-od808::sample-shop-5:Maxo5",
+   "item_id": "maxon-od808",
+   "item_name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "title_ja": "Maxon OD808 Overdrive 日本製 オーバードライブ",
+   "title_en": "Maxon OD808 Overdrive Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-5/sample-57020/",
+   "shop": "サンプルショップ6 (sample shop)",
+   "buy_jpy": 15790,
+   "postage_included": true,
+   "sale_usd": 170.89,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 5020,
+     "duty_jpy": 3204,
+     "buy_jpy": 15790,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -3559,
+     "margin": -0.1417,
+     "roi": -0.2254,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15790,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 515,
+     "margin": 0.0205,
+     "roi": 0.0326,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15790,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 515,
+     "margin": 0.0205,
+     "roi": 0.0326,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15790,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 515,
+     "margin": 0.0205,
+     "roi": 0.0326,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15790,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 515,
+     "margin": 0.0205,
+     "roi": 0.0326,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 25121,
+    "ebay_fees_jpy": 4366,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 15790,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 515,
+    "margin": 0.0205,
+    "roi": 0.0326,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (2%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "tojiro-dp-gyuto-210::sample-shop-7:藤次郎 7",
+   "item_id": "tojiro-dp-gyuto-210",
+   "item_name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "title_ja": "TOJIRO DP 牛刀 21cm 日本製",
+   "title_en": "TOJIRO DP Gyuto 21cm Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-7/sample-90187/",
+   "shop": "サンプルショップ8 (sample shop)",
+   "buy_jpy": 9720,
+   "postage_included": true,
+   "sale_usd": 116.13,
+   "weight_g": 700,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 4460,
+     "duty_jpy": 2177,
+     "buy_jpy": 9720,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -2574,
+     "margin": -0.1508,
+     "roi": -0.2649,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9720,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 413,
+     "margin": 0.0242,
+     "roi": 0.0425,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9720,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 413,
+     "margin": 0.0242,
+     "roi": 0.0425,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9720,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 413,
+     "margin": 0.0242,
+     "roi": 0.0425,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 9720,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 413,
+     "margin": 0.0242,
+     "roi": 0.0425,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 17071,
+    "ebay_fees_jpy": 2988,
+    "shipping_jpy": 3650,
+    "duty_jpy": 0,
+    "buy_jpy": 9720,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 413,
+    "margin": 0.0242,
+    "roi": 0.0425,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (2%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "tojiro-dp-gyuto-210::sample-shop-8:藤次郎 8",
+   "item_id": "tojiro-dp-gyuto-210",
+   "item_name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "title_ja": "藤次郎 DP 3層鋼 牛刀210mm",
+   "title_en": "Tojiro DP 3-layer steel Gyuto 210mm",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-8/sample-55970/",
+   "shop": "サンプルショップ9 (sample shop)",
+   "buy_jpy": 10030,
+   "postage_included": true,
+   "sale_usd": 116.13,
+   "weight_g": 700,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 4460,
+     "duty_jpy": 2177,
+     "buy_jpy": 10030,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -2884,
+     "margin": -0.169,
+     "roi": -0.2876,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 10030,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 103,
+     "margin": 0.006,
+     "roi": 0.0103,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 10030,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 103,
+     "margin": 0.006,
+     "roi": 0.0103,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 10030,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 103,
+     "margin": 0.006,
+     "roi": 0.0103,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 10030,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": 103,
+     "margin": 0.006,
+     "roi": 0.0103,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 17071,
+    "ebay_fees_jpy": 2988,
+    "shipping_jpy": 3650,
+    "duty_jpy": 0,
+    "buy_jpy": 10030,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": 103,
+    "margin": 0.006,
+    "roi": 0.0103,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (1%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "maxon-od808::sample-shop-8:Maxo8",
+   "item_id": "maxon-od808",
+   "item_name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "title_ja": "MAXON OD808 オーバードライブ エフェクター 電池付",
+   "title_en": "MAXON OD808 overdrive pedal, battery included",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-8/sample-45320/",
+   "shop": "サンプルショップ9 (sample shop)",
+   "buy_jpy": 15680,
+   "postage_included": false,
+   "sale_usd": 170.89,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 5020,
+     "duty_jpy": 3204,
+     "buy_jpy": 15680,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -4249,
+     "margin": -0.1692,
+     "roi": -0.2579,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15680,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -175,
+     "margin": -0.007,
+     "roi": -0.0106,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15680,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -175,
+     "margin": -0.007,
+     "roi": -0.0106,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15680,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -175,
+     "margin": -0.007,
+     "roi": -0.0106,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15680,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -175,
+     "margin": -0.007,
+     "roi": -0.0106,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 25121,
+    "ebay_fees_jpy": 4366,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 15680,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -175,
+    "margin": -0.007,
+    "roi": -0.0106,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "scope": "keyword",
+     "text": "電池 (battery) mentioned — remove batteries before posting; lithium batteries are restricted in air mail."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-1%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "maxon-od808::sample-shop-2:Maxo2",
+   "item_id": "maxon-od808",
+   "item_name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "title_ja": "Maxon OD808 Overdrive 日本製 オーバードライブ",
+   "title_en": "Maxon OD808 Overdrive Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-2/sample-57020/",
+   "shop": "サンプルショップ3 (sample shop)",
+   "buy_jpy": 15800,
+   "postage_included": false,
+   "sale_usd": 170.89,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 5020,
+     "duty_jpy": 3204,
+     "buy_jpy": 15800,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -4369,
+     "margin": -0.1739,
+     "roi": -0.2632,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15800,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -295,
+     "margin": -0.0118,
+     "roi": -0.0178,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15800,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -295,
+     "margin": -0.0118,
+     "roi": -0.0178,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15800,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -295,
+     "margin": -0.0118,
+     "roi": -0.0178,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15800,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -295,
+     "margin": -0.0118,
+     "roi": -0.0178,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 25121,
+    "ebay_fees_jpy": 4366,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 15800,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -295,
+    "margin": -0.0118,
+    "roi": -0.0178,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-1%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "shimano-stella-c3000::sample-shop-9:シマノ 9",
+   "item_id": "shimano-stella-c3000",
+   "item_name": "Shimano Stella C3000 (JDM spinning reel)",
+   "category": "fishing",
+   "title_ja": "シマノ 22 ステラ C3000XG スピニングリール",
+   "title_en": "Shimano 22 Stella C3000XG spinning reel",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-9/sample-8536/",
+   "shop": "サンプルショップ10 (sample shop)",
+   "buy_jpy": 79300,
+   "postage_included": false,
+   "sale_usd": 694.35,
+   "weight_g": 1200,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5990,
+     "duty_jpy": 13019,
+     "buy_jpy": 79300,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -14877,
+     "margin": -0.1458,
+     "roi": -0.1857,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 79300,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -868,
+     "margin": -0.0085,
+     "roi": -0.0108,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 79300,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -868,
+     "margin": -0.0085,
+     "roi": -0.0108,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 79300,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -868,
+     "margin": -0.0085,
+     "roi": -0.0108,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 102069,
+     "ebay_fees_jpy": 17538,
+     "shipping_jpy": 5000,
+     "duty_jpy": 0,
+     "buy_jpy": 79300,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -868,
+     "margin": -0.0085,
+     "roi": -0.0108,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 102069,
+    "ebay_fees_jpy": 17538,
+    "shipping_jpy": 5000,
+    "duty_jpy": 0,
+    "buy_jpy": 79300,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -868,
+    "margin": -0.0085,
+    "roi": -0.0108,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Cover lure hooks for shipping.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-1%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "tojiro-dp-gyuto-210::sample-shop-0:藤次郎 0",
+   "item_id": "tojiro-dp-gyuto-210",
+   "item_name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "title_ja": "藤次郎 DP 3層鋼 牛刀210mm",
+   "title_en": "Tojiro DP 3-layer steel Gyuto 210mm",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-0/sample-55970/",
+   "shop": "サンプルショップ1 (sample shop)",
+   "buy_jpy": 11130,
+   "postage_included": true,
+   "sale_usd": 116.13,
+   "weight_g": 700,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 4460,
+     "duty_jpy": 2177,
+     "buy_jpy": 11130,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -3984,
+     "margin": -0.2334,
+     "roi": -0.358,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11130,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -997,
+     "margin": -0.0584,
+     "roi": -0.0896,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11130,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -997,
+     "margin": -0.0584,
+     "roi": -0.0896,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11130,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -997,
+     "margin": -0.0584,
+     "roi": -0.0896,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11130,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -997,
+     "margin": -0.0584,
+     "roi": -0.0896,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 17071,
+    "ebay_fees_jpy": 2988,
+    "shipping_jpy": 3650,
+    "duty_jpy": 0,
+    "buy_jpy": 11130,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": -997,
+    "margin": -0.0584,
+    "roi": -0.0896,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-6%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "boss-sd1w-waza::sample-shop-6:BOSS6",
+   "item_id": "boss-sd1w-waza",
+   "item_name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "title_ja": "BOSS SD-1W 限定カラー エフェクター",
+   "title_en": "BOSS SD-1W limited colour effects pedal",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-6/sample-20374/",
+   "shop": "サンプルショップ7 (sample shop)",
+   "buy_jpy": 15350,
+   "postage_included": true,
+   "sale_usd": 152.26,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 5020,
+     "duty_jpy": 2855,
+     "buy_jpy": 15350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -5040,
+     "margin": -0.2252,
+     "roi": -0.3283,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -1315,
+     "margin": -0.0588,
+     "roi": -0.0857,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -1315,
+     "margin": -0.0588,
+     "roi": -0.0857,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -1315,
+     "margin": -0.0588,
+     "roi": -0.0857,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 15350,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -1315,
+     "margin": -0.0588,
+     "roi": -0.0857,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 22382,
+    "ebay_fees_jpy": 3897,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 15350,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": -1315,
+    "margin": -0.0588,
+    "roi": -0.0857,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "info",
+     "scope": "keyword",
+     "text": "限定 (limited edition) — check eBay sold prices; limited runs can sell well above normal."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-6%). Fee or rate changes could wipe it out."
+    },
+    {
+     "level": "info",
+     "scope": "data",
+     "text": "12 listings from sellers outside Japan — item may not be Japan-only."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "maxon-od808::sample-shop-1:Maxo1",
+   "item_id": "maxon-od808",
+   "item_name": "Maxon OD808 Overdrive",
+   "category": "pedal",
+   "title_ja": "MAXON OD808 オーバードライブ エフェクター 電池付",
+   "title_en": "MAXON OD808 overdrive pedal, battery included",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-1/sample-45320/",
+   "shop": "サンプルショップ2 (sample shop)",
+   "buy_jpy": 16840,
+   "postage_included": false,
+   "sale_usd": 170.89,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 5020,
+     "duty_jpy": 3204,
+     "buy_jpy": 16840,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -5409,
+     "margin": -0.2153,
+     "roi": -0.3067,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16840,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1335,
+     "margin": -0.0532,
+     "roi": -0.0757,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16840,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1335,
+     "margin": -0.0532,
+     "roi": -0.0757,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16840,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1335,
+     "margin": -0.0532,
+     "roi": -0.0757,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 25121,
+     "ebay_fees_jpy": 4366,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16840,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1335,
+     "margin": -0.0532,
+     "roi": -0.0757,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 25121,
+    "ebay_fees_jpy": 4366,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 16840,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -1335,
+    "margin": -0.0532,
+    "roi": -0.0757,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "scope": "keyword",
+     "text": "電池 (battery) mentioned — remove batteries before posting; lithium batteries are restricted in air mail."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-5%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "tojiro-dp-gyuto-210::sample-shop-6:藤次郎 6",
+   "item_id": "tojiro-dp-gyuto-210",
+   "item_name": "Tojiro DP Gyuto 210mm",
+   "category": "knife",
+   "title_ja": "藤次郎 DP 3層鋼 牛刀210mm",
+   "title_en": "Tojiro DP 3-layer steel Gyuto 210mm",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-6/sample-55970/",
+   "shop": "サンプルショップ7 (sample shop)",
+   "buy_jpy": 11160,
+   "postage_included": false,
+   "sale_usd": 116.13,
+   "weight_g": 700,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 4460,
+     "duty_jpy": 2177,
+     "buy_jpy": 11160,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -4814,
+     "margin": -0.282,
+     "roi": -0.4025,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11160,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1827,
+     "margin": -0.107,
+     "roi": -0.1528,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11160,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1827,
+     "margin": -0.107,
+     "roi": -0.1528,
+     "blocked": true
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11160,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1827,
+     "margin": -0.107,
+     "roi": -0.1528,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 17071,
+     "ebay_fees_jpy": 2988,
+     "shipping_jpy": 3650,
+     "duty_jpy": 0,
+     "buy_jpy": 11160,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -1827,
+     "margin": -0.107,
+     "roi": -0.1528,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 17071,
+    "ebay_fees_jpy": 2988,
+    "shipping_jpy": 3650,
+    "duty_jpy": 0,
+    "buy_jpy": 11160,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -1827,
+    "margin": -0.107,
+    "roi": -0.1528,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "caution",
+     "text": "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box.",
+     "source": "https://www.post.japanpost.jp/question/oversea/181.html",
+     "scope": "category"
+    },
+    {
+     "level": "caution",
+     "text": "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country.",
+     "source": "https://www.post.japanpost.jp/int/use/",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 道具類 (tools & goods) — confirm at the police station"
+    },
+    {
+     "level": "block",
+     "scope": "country",
+     "country": "GB",
+     "text": "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-11%). Fee or rate changes could wipe it out."
+    }
+   ],
+   "blocked": [
+    "GB"
+   ]
+  },
+  {
+   "id": "boss-sd1w-waza::sample-shop-4:BOSS4",
+   "item_id": "boss-sd1w-waza",
+   "item_name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "title_ja": "BOSS SD-1W 技 WAZA CRAFT Super OverDrive 日本製",
+   "title_en": "BOSS SD-1W Waza Craft Super OverDrive Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-4/sample-35763/",
+   "shop": "サンプルショップ5 (sample shop)",
+   "buy_jpy": 16040,
+   "postage_included": false,
+   "sale_usd": 152.26,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 5020,
+     "duty_jpy": 2855,
+     "buy_jpy": 16040,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -6530,
+     "margin": -0.2917,
+     "roi": -0.3878,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16040,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2805,
+     "margin": -0.1253,
+     "roi": -0.1666,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16040,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2805,
+     "margin": -0.1253,
+     "roi": -0.1666,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16040,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2805,
+     "margin": -0.1253,
+     "roi": -0.1666,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16040,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2805,
+     "margin": -0.1253,
+     "roi": -0.1666,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 22382,
+    "ebay_fees_jpy": 3897,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 16040,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -2805,
+    "margin": -0.1253,
+    "roi": -0.1666,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-13%). Fee or rate changes could wipe it out."
+    },
+    {
+     "level": "info",
+     "scope": "data",
+     "text": "12 listings from sellers outside Japan — item may not be Japan-only."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "boss-sd1w-waza::sample-shop-3:BOSS3",
+   "item_id": "boss-sd1w-waza",
+   "item_name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "title_ja": "BOSS SD-1W 技 WAZA CRAFT Super OverDrive 日本製",
+   "title_en": "BOSS SD-1W Waza Craft Super OverDrive Made in Japan",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-3/sample-35763/",
+   "shop": "サンプルショップ4 (sample shop)",
+   "buy_jpy": 16100,
+   "postage_included": false,
+   "sale_usd": 152.26,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 5020,
+     "duty_jpy": 2855,
+     "buy_jpy": 16100,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -6590,
+     "margin": -0.2944,
+     "roi": -0.3899,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16100,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2865,
+     "margin": -0.128,
+     "roi": -0.1695,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16100,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2865,
+     "margin": -0.128,
+     "roi": -0.1695,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16100,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2865,
+     "margin": -0.128,
+     "roi": -0.1695,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 16100,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -2865,
+     "margin": -0.128,
+     "roi": -0.1695,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 22382,
+    "ebay_fees_jpy": 3897,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 16100,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -2865,
+    "margin": -0.128,
+    "roi": -0.1695,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-13%). Fee or rate changes could wipe it out."
+    },
+    {
+     "level": "info",
+     "scope": "data",
+     "text": "12 listings from sellers outside Japan — item may not be Japan-only."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "boss-sd1w-waza::sample-shop-0:BOSS0",
+   "item_id": "boss-sd1w-waza",
+   "item_name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "title_ja": "BOSS SD-1W スーパーオーバードライブ 技クラフト",
+   "title_en": "BOSS SD-1W Super Overdrive Waza Craft",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-0/sample-10296/",
+   "shop": "サンプルショップ1 (sample shop)",
+   "buy_jpy": 18630,
+   "postage_included": true,
+   "sale_usd": 152.26,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 5020,
+     "duty_jpy": 2855,
+     "buy_jpy": 18630,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -8320,
+     "margin": -0.3717,
+     "roi": -0.4466,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18630,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -4595,
+     "margin": -0.2053,
+     "roi": -0.2466,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18630,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -4595,
+     "margin": -0.2053,
+     "roi": -0.2466,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18630,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -4595,
+     "margin": -0.2053,
+     "roi": -0.2466,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18630,
+     "domestic_postage_jpy": 0,
+     "packaging_jpy": 300,
+     "profit_jpy": -4595,
+     "margin": -0.2053,
+     "roi": -0.2466,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 22382,
+    "ebay_fees_jpy": 3897,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 18630,
+    "domestic_postage_jpy": 0,
+    "packaging_jpy": 300,
+    "profit_jpy": -4595,
+    "margin": -0.2053,
+    "roi": -0.2466,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-21%). Fee or rate changes could wipe it out."
+    },
+    {
+     "level": "info",
+     "scope": "data",
+     "text": "12 listings from sellers outside Japan — item may not be Japan-only."
+    }
+   ],
+   "blocked": []
+  },
+  {
+   "id": "boss-sd1w-waza::sample-shop-7:BOSS7",
+   "item_id": "boss-sd1w-waza",
+   "item_name": "BOSS SD-1W Waza Craft Super OverDrive",
+   "category": "pedal",
+   "title_ja": "BOSS SD-1W 限定カラー エフェクター",
+   "title_en": "BOSS SD-1W limited colour effects pedal",
+   "image": null,
+   "url": "https://item.rakuten.co.jp/sample-shop-7/sample-20374/",
+   "shop": "サンプルショップ8 (sample shop)",
+   "buy_jpy": 18470,
+   "postage_included": false,
+   "sale_usd": 152.26,
+   "weight_g": 900,
+   "per_dest": {
+    "US": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 5020,
+     "duty_jpy": 2855,
+     "buy_jpy": 18470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -8960,
+     "margin": -0.4003,
+     "roi": -0.465,
+     "blocked": false
+    },
+    "CA": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -5235,
+     "margin": -0.2339,
+     "roi": -0.2717,
+     "blocked": false
+    },
+    "GB": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -5235,
+     "margin": -0.2339,
+     "roi": -0.2717,
+     "blocked": false
+    },
+    "AU": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -5235,
+     "margin": -0.2339,
+     "roi": -0.2717,
+     "blocked": false
+    },
+    "DE": {
+     "ok": true,
+     "revenue_jpy": 22382,
+     "ebay_fees_jpy": 3897,
+     "shipping_jpy": 4150,
+     "duty_jpy": 0,
+     "buy_jpy": 18470,
+     "domestic_postage_jpy": 800,
+     "packaging_jpy": 300,
+     "profit_jpy": -5235,
+     "margin": -0.2339,
+     "roi": -0.2717,
+     "blocked": false
+    }
+   },
+   "best": {
+    "country": "CA",
+    "ok": true,
+    "revenue_jpy": 22382,
+    "ebay_fees_jpy": 3897,
+    "shipping_jpy": 4150,
+    "duty_jpy": 0,
+    "buy_jpy": 18470,
+    "domestic_postage_jpy": 800,
+    "packaging_jpy": 300,
+    "profit_jpy": -5235,
+    "margin": -0.2339,
+    "roi": -0.2717,
+    "blocked": false
+   },
+   "warnings": [
+    {
+     "level": "info",
+     "text": "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly.",
+     "scope": "category"
+    },
+    {
+     "level": "info",
+     "scope": "licence",
+     "text": "古物商 category (licence item category): 機械工具類 (machinery & tools — includes electrical goods)"
+    },
+    {
+     "level": "info",
+     "scope": "keyword",
+     "text": "限定 (limited edition) — check eBay sold prices; limited runs can sell well above normal."
+    },
+    {
+     "level": "caution",
+     "text": "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting.",
+     "source": "https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "text": "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml.",
+     "source": "https://www.nippon.com/en/news/yjj2026072400325/",
+     "scope": "country",
+     "country": "US"
+    },
+    {
+     "level": "info",
+     "scope": "profit",
+     "text": "Thin margin (-23%). Fee or rate changes could wipe it out."
+    },
+    {
+     "level": "info",
+     "scope": "data",
+     "text": "12 listings from sellers outside Japan — item may not be Japan-only."
+    }
+   ],
+   "blocked": []
+  }
+ ],
+ "errors": []
+}

@@ -1,0 +1,62 @@
+# Japan Resale Finder — cost assumptions
+# Edit these to match your own eBay invoices and shipping receipts.
+# Every number here feeds the profit estimate shown in the app.
+
+fx:
+  # Live USD→JPY rate is fetched each scan (Frankfurter / ECB data).
+  # This value is only used if the live fetch fails.
+  fallback_usd_jpy: 150.0
+  # Cost of converting your USD payout into JPY (spread + fees). Assumption.
+  conversion_cost: 0.02
+
+ebay:
+  marketplace: EBAY_US          # where comparison prices come from
+  # Final value fee, % of total sale (item + shipping). 2026 default for most categories.
+  final_value_fee: 0.136
+  # Category overrides (see watchlist "category" field)
+  final_value_fee_by_category:
+    watch: 0.15
+    record: 0.153
+    cd_dvd: 0.153
+    book: 0.153
+  per_order_fee_usd: 0.40
+  # International fee for sellers registered outside the buyer's country. ASSUMPTION — check Seller Hub.
+  international_fee: 0.0165
+  # Japanese consumption tax charged on eBay's fees for Japan-registered sellers. ASSUMPTION — check your invoice.
+  fee_tax: 0.10
+  # Price you aim to list at, relative to the median of other Japan-based sellers.
+  undercut: 0.97
+  # Need at least this many Japan-located comps to trust the median; otherwise all-location comps are used.
+  min_jp_comps: 3
+
+costs:
+  packaging_jpy: 300            # box, bubble wrap, tape
+  rakuten_domestic_postage_jpy: 800   # used when a Rakuten listing says postage is NOT included
+
+# Destinations the app calculates profit for.
+# zone = Japan Post EMS zone. duty = share of sale price YOU pay (DDP). 0 = buyer pays on delivery / at checkout.
+destinations:
+  US: {name: United States, zone: 4, duty: 0.125, ddp_prepay_fee_jpy: 0}
+  CA: {name: Canada,        zone: 3, duty: 0.0}
+  GB: {name: United Kingdom,zone: 3, duty: 0.0}
+  AU: {name: Australia,     zone: 3, duty: 0.0}
+  DE: {name: Germany (EU),  zone: 3, duty: 0.0}
+
+# Japan Post EMS rates in JPY (include special surcharges). Weight in grams → price.
+# Current table (from Japan Post's published EMS rates, checked Oct 2026).
+shipping:
+  service: EMS
+  tables:
+    - valid_from: "2000-01-01"
+      zone3: {500: 3150, 600: 3400, 700: 3650, 800: 3900, 900: 4150, 1000: 4400, 1250: 5000, 1500: 5550, 1750: 6150, 2000: 6700, 2500: 7750, 3000: 8800, 3500: 9850, 4000: 10900, 4500: 11950, 5000: 13000}
+      zone4: {500: 3900, 600: 4180, 700: 4460, 800: 4740, 900: 5020, 1000: 5300, 1250: 5990, 1500: 6600, 1750: 7290, 2000: 7900, 2500: 9100, 3000: 10300, 3500: 11500, 4000: 12700, 4500: 13900, 5000: 15100}
+    # New rates announced 9 Oct 2026, effective 1 Feb 2027 (1 kg steps; lightest band becomes 1 kg).
+    - valid_from: "2027-02-01"
+      zone3: {1000: 5100, 2000: 7700, 3000: 10100, 4000: 12500, 5000: 14900, 6000: 17600, 7000: 20050, 8000: 22500, 9000: 24950}
+      zone4: {1000: 7400, 2000: 10300, 3000: 13000, 4000: 15700, 5000: 18400, 6000: 21400, 7000: 24150, 8000: 26900, 9000: 29650}
+
+scan:
+  rakuten_hits: 30              # results fetched per watchlist item
+  candidates_per_item: 5        # cheapest matching Rakuten listings kept per item
+  ebay_limit: 100
+  thin_margin_warning: 0.15     # warn when margin is below this

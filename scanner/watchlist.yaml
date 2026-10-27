@@ -1,0 +1,88 @@
+# Your watchlist. Add, remove or edit items here (you can do this from the GitHub app on your phone).
+#
+# Fields:
+#   id           short unique name
+#   name         display name (English)
+#   category     knife | pedal | record | cd_dvd | game | book | fishing | watch | kitchenware | kimono | cards
+#   rakuten      what to search on 楽天市場 (Rakuten Ichiba), in Japanese
+#   ebay         what to search on eBay, in English
+#   must_include words that MUST appear in a listing title (any language; case and full-width ignored)
+#   exclude      words that disqualify a listing (accessories, wrong model, etc.)
+#   price_jpy    [min, max] Rakuten price band, to skip accessories and bundles
+#   price_usd    [min, max] eBay price band
+#   condition    NEW | USED | ANY  (for eBay comps)
+#   weight_g     packed weight for shipping
+#   shipping_override_jpy  optional fixed shipping cost instead of the EMS table
+
+items:
+  - id: misono-ux10-gyuto-240
+    name: Misono UX10 Gyuto 240mm
+    category: knife
+    rakuten: ミソノ UX10 牛刀 24cm
+    ebay: Misono UX10 gyuto 240mm
+    must_include: [UX10]
+    exclude: [砥石, sharpener, ケース, case, sheath, saya, 210, 270]
+    price_jpy: [15000, 60000]
+    price_usd: [100, 500]
+    condition: NEW
+    weight_g: 800
+
+  - id: tojiro-dp-gyuto-210
+    name: Tojiro DP Gyuto 210mm
+    category: knife
+    rakuten: 藤次郎 DP 牛刀 210mm
+    ebay: Tojiro DP gyuto 210mm
+    must_include: [DP]
+    exclude: [セット, set, 砥石, 240, 270, 180]
+    price_jpy: [5000, 20000]
+    price_usd: [50, 200]
+    condition: NEW
+    weight_g: 700
+
+  - id: boss-sd1w-waza
+    name: BOSS SD-1W Waza Craft Super OverDrive
+    category: pedal
+    rakuten: BOSS SD-1W
+    ebay: BOSS SD-1W Waza Craft
+    must_include: [SD-1W]
+    exclude: [ケーブル, cable, adapter, PSA, 中古]
+    price_jpy: [10000, 30000]
+    price_usd: [80, 250]
+    condition: ANY
+    weight_g: 900
+
+  - id: maxon-od808
+    name: Maxon OD808 Overdrive
+    category: pedal
+    rakuten: Maxon OD808
+    ebay: Maxon OD808 overdrive
+    must_include: [OD808]
+    exclude: [OD808X, ケーブル, cable]
+    price_jpy: [8000, 30000]
+    price_usd: [70, 300]
+    condition: ANY
+    weight_g: 900
+
+  - id: shimano-stella-c3000
+    name: Shimano Stella C3000 (JDM spinning reel)
+    category: fishing
+    rakuten: シマノ ステラ C3000
+    ebay: Shimano Stella C3000 JDM
+    must_include: [C3000]
+    exclude: [スプール, spool, ハンドル, handle, ノブ, knob, パーツ, parts]
+    price_jpy: [50000, 120000]
+    price_usd: [350, 1000]
+    condition: NEW
+    weight_g: 1200
+
+  - id: nambu-tetsubin-1l
+    name: Nambu cast-iron tetsubin kettle (~1L)
+    category: kitchenware
+    rakuten: 南部鉄器 鉄瓶 1.0L
+    ebay: Nambu tekki tetsubin cast iron kettle Japan
+    must_include: [鉄瓶]
+    exclude: [急須, teapot, 敷物, trivet]
+    price_jpy: [8000, 40000]
+    price_usd: [80, 400]
+    condition: NEW
+    weight_g: 2500

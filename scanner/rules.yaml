@@ -1,0 +1,116 @@
+# Legal / shipping / practical warnings.
+# level: block (don't ship there / don't sell) | caution (check before buying) | info (good to know)
+# These are a checklist, not legal advice. Rules change — update this file when they do.
+
+global:
+  - level: info
+    text: "古物商許可 (secondhand dealer licence) needed to buy used goods for resale. Even unused items bought at retail can count as 古物 (secondhand goods) — confirm with your police station."
+    source: https://ayusawa-partners.jp/column/kobutsushou-shinsei-guide
+
+destinations:
+  US:
+    - level: caution
+      text: "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting."
+      source: https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html
+    - level: info
+      text: "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml."
+      source: https://www.nippon.com/en/news/yjj2026072400325/
+
+categories:
+  knife:
+    label: "Kitchen knives / 包丁 (kitchen knives)"
+    kobutsu: "道具類 (tools & goods) — confirm at the police station"
+    blocked_destinations:
+      GB: "UK: sellers report knives are confiscated at import and couriers no longer carry them."
+    warnings:
+      - level: caution
+        text: "Japan Post refuses knives unless the blade is in a hard sheath/cover, cushioned, in a sturdy box."
+        source: https://www.post.japanpost.jp/question/oversea/181.html
+      - level: caution
+        text: "Many countries regulate knife imports — check 国際郵便条件表 (Japan Post country conditions) before listing to a new country."
+        source: https://www.post.japanpost.jp/int/use/
+  pedal:
+    label: "Effects pedals / エフェクター (effects units)"
+    kobutsu: "機械工具類 (machinery & tools — includes electrical goods)"
+    warnings:
+      - level: info
+        text: "Ship without batteries. Japanese power adapters are 100V — leave out or state clearly."
+  record:
+    label: "Vinyl records / レコード (records)"
+    kobutsu: "道具類 (tools & goods)"
+    warnings: []
+  cd_dvd:
+    label: "CDs / DVDs"
+    kobutsu: "道具類 (tools & goods)"
+    id_check_any_price: true
+  game:
+    label: "Video games / ゲームソフト (game software)"
+    kobutsu: "道具類 (tools & goods)"
+    id_check_any_price: true
+  book:
+    label: "Books & manga / 書籍 (books)"
+    kobutsu: "書籍 (books)"
+    id_check_any_price: true
+  fishing:
+    label: "Fishing tackle / 釣具 (fishing gear)"
+    kobutsu: "道具類 (tools & goods)"
+    warnings:
+      - level: info
+        text: "Cover lure hooks for shipping."
+  watch:
+    label: "Watches / 時計 (watches)"
+    kobutsu: "時計・宝飾品類 (watches & jewellery)"
+    warnings:
+      - level: caution
+        text: "High counterfeit risk — buy only from trusted shops. eBay fee for watches is higher (set in config.yaml)."
+      - level: caution
+        text: "Batteries inside: check Japan Post rules for devices containing batteries."
+  kitchenware:
+    label: "Kitchenware / 台所用品 (kitchen goods)"
+    kobutsu: "道具類 (tools & goods)"
+    warnings:
+      - level: info
+        text: "Heavy or fragile — shipping eats margin. Double-box ceramics and cast iron."
+  kimono:
+    label: "Kimono & obi / 着物・帯 (kimono & sashes)"
+    kobutsu: "衣類 (clothing)"
+    warnings: []
+  cards:
+    label: "Trading cards / トレカ (trading cards)"
+    kobutsu: "道具類 (tools & goods)"
+    warnings:
+      - level: caution
+        text: "Fakes and resealed packs are common — buy from established shops."
+
+# Words found in a Japanese or English listing title that trigger a warning.
+keywords:
+  - match: [電池, バッテリー, battery, リチウム]
+    level: caution
+    text: "電池 (battery) mentioned — remove batteries before posting; lithium batteries are restricted in air mail."
+  - match: [ジャンク, junk]
+    level: caution
+    text: "ジャンク (junk / sold as-is) — may be faulty. Test before you list."
+  - match: [並行輸入, 海外版, 輸入品, 逆輸入]
+    level: caution
+    text: "並行輸入 / 海外版 (parallel import / overseas version) — not Japan-only, so little price edge abroad."
+  - match: [中古, 美品, used]
+    level: info
+    text: "中古 (used) item — 古物商許可 (secondhand dealer licence) required to buy for resale."
+  - match: [酒, ウイスキー, 日本酒, 焼酎, whisky, sake]
+    level: block
+    text: "Alcohol — selling needs a 酒類販売業免許 (liquor sales licence) and many carriers restrict it."
+  - match: [食品, お菓子, 菓子, 調味料]
+    level: block
+    text: "Food — import rules vary widely by country. Avoid."
+  - match: [化粧品, コスメ, cosmetics]
+    level: block
+    text: "Cosmetics — ingredient and import rules vary. Avoid."
+  - match: [日本刀, 模造刀, 刀剣, katana]
+    level: block
+    text: "Swords / replica swords — export and import heavily restricted."
+  - match: [ACアダプター, アダプター付, adapter included]
+    level: info
+    text: "Japanese 100V adapter included — mention voltage in your listing."
+  - match: [限定, limited]
+    level: info
+    text: "限定 (limited edition) — check eBay sold prices; limited runs can sell well above normal."
