@@ -26,10 +26,12 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 import alerts  # noqa: E402
+import history  # noqa: E402
 import profit  # noqa: E402
 import rules as rules_mod  # noqa: E402
 import saleinfo  # noqa: E402
 import sources  # noqa: E402
+import trust  # noqa: E402
 from textutil import contains_all, contains_any, median  # noqa: E402
 from translate import Translator  # noqa: E402
 
@@ -65,6 +67,8 @@ def run(mock=False, today=None, now=None):
     dests = cfg["destinations"]
     per_order_jpy = cfg["ebay"]["per_order_fee_usd"] * jpy["USD"]
     sale_now = saleinfo.current(cfg.get("sales"), now)
+    hist = history.load("sample" if mock else "live", today)
+    cfg_h, cfg_t = cfg["history"], cfg.get("trust", {})
 
     items_out, opps, errors = [], [], []
 
@@ -85,14 +89,18 @@ def run(mock=False, today=None, now=None):
             for code, d in dests.items():
                 band = local_band(it.get("price_usd"), d["currency"], jpy)
                 kw = dict(marketplace=d["marketplace"], currency=d["currency"], ship_to=code,
-                          price_range=band, condition=cond, limit=cfg["scan"]["ebay_limit"])
+                          price_range=band, condition=cond, limit=cfg["scan"]["ebay_limit"],
+                          exclude_sellers=cfg_t.get("ebay", {}).get("exclude_sellers"))
                 try:
                     all_c = [c for c in ebay.search(it["ebay"], **kw) if keep(c)]
                     jp_c = [c for c in ebay.search(it["ebay"], location_jp=True, **kw) if keep(c)]
                 except Exception as e:  # one marketplace failing shouldn't kill the item
                     all_c, jp_c = [], []
                     errors.append({"item": it["id"], "error": f"{d['marketplace']}: {e}"})
+                all_c, removed = trust.clean_ebay(all_c, cfg_t, today)
+                jp_c, _ = trust.clean_ebay(jp_c, cfg_t, today)
                 local, stats = profit.sale_price(jp_c, all_c, cfg["ebay"])
+                stats["filtered"] = removed
                 stats.update({"jp_count": len(jp_c), "all_count": len(all_c),
                               "non_jp_count": len([c for c in all_c if c.get("country") != "JP"]),
                               "currency": d["currency"], "site": d["site"], **ebay_links(d["site"], it["ebay"])})
@@ -126,18 +134,31 @@ def run(mock=False, today=None, now=None):
                                hits=cfg["scan"]["rakuten_hits"])
             matched = [r for r in found if keep_r(r)
                        and (not pr[0] or r["price_jpy"] >= pr[0]) and (not pr[1] or r["price_jpy"] <= pr[1])]
+            hidden = []
+            for r in matched:
+                r["trust_score"], r["trust_reasons"], r["trust_hidden"] = trust.rakuten_score(r, cfg_t)
+                if r["trust_hidden"]:
+                    hidden.append({"shop": r["shop"], "title": r["title"][:60],
+                                   "why": "; ".join(t for k, t in r["trust_reasons"] if k == "bad")})
+            matched = [r for r in matched if not r["trust_hidden"]]
+            info["rakuten_hidden"] = hidden
             have_price = any(m["sale_jpy"] for m in market.values())
             info["rakuten_found"], info["rakuten_matched"] = len(found), len(matched)
             info["status"] = "ok" if matched and have_price else ("no eBay comps" if not have_price else "no Rakuten match")
             items_out.append(info)
             if not (matched and have_price):
+                history.update(hist, it["id"], today, [r["price_jpy"] for r in matched], {}, {})
+                info["history"] = history.series(hist, it["id"], today, cfg_h["window_days"])
                 continue
 
             rak_median = median([r["price_jpy"] for r in matched])
             cands = sorted(matched, key=lambda r: r["price_jpy"])[: cfg["scan"]["candidates_per_item"]]
             translations = tr.translate_many([c["title"] for c in cands])
 
+            item_hist_series = None
             for c in cands:
+                opp_id = f"{it['id']}::{c.get('item_code') or c['url']}"
+                deal = history.tags_for(hist, it["id"], opp_id, c["price_jpy"], today, cfg_h)
                 title_en = translations.get(c["title"])
                 warns, blocked = rules_mod.warnings_for(it, c["title"], title_en, rules, list(dests))
                 pts = profit.points_value(c["price_jpy"], c.get("point_rate"), cfg.get("points"))
@@ -176,12 +197,19 @@ def run(mock=False, today=None, now=None):
                 if us and us["stats"].get("non_jp_count", 0) >= 10:
                     warns.append({"level": "info", "scope": "data",
                                   "text": f"{us['stats']['non_jp_count']} eBay.com listings from sellers outside Japan — item may not be Japan-only."})
+                if c["trust_score"] <= -2:
+                    warns.append({"level": "caution", "scope": "trust",
+                                  "text": "Shop trust is low: " + "; ".join(t for k, t in c["trust_reasons"] if k != "good")})
                 if (c.get("point_rate") or 1) >= 5:
                     warns.append({"level": "info", "scope": "profit",
                                   "text": f"Shop is offering {c['point_rate']}x 楽天ポイント (Rakuten points) right now — counted in the profit."})
 
                 opps.append({
-                    "id": f"{it['id']}::{c.get('item_code') or c['url']}",
+                    "id": opp_id,
+                    "trust": {"score": c["trust_score"], "reasons": [{"kind": k, "text": t} for k, t in c["trust_reasons"]],
+                              "reviews": c.get("review_count"), "rating": c.get("review_avg"),
+                              "shop_of_year": c.get("shop_of_year")},
+                    "deal": deal,
                     "item_id": it["id"], "item_name": it["name"], "category": it["category"],
                     "title_ja": c["title"], "title_en": title_en,
                     "image": c["image"], "url": c["url"], "shop": c["shop"],
@@ -192,6 +220,13 @@ def run(mock=False, today=None, now=None):
                     "best": {"country": best_code, **best} if best else None,
                     "warnings": warns, "blocked": sorted(blocked),
                 })
+            # --- remember today's prices for the history / deal tags
+            sale_by_dest = {code: m.get("sale_jpy") for code, m in market.items() if m.get("price_source") == "local"}
+            info["ebay_trend_us"] = history.ebay_trend(hist, it["id"], "US", sale_by_dest.get("US"), today,
+                                                       cfg_h["window_days"])
+            history.update(hist, it["id"], today, [r["price_jpy"] for r in matched], sale_by_dest,
+                           {f"{it['id']}::{r.get('item_code') or r['url']}": r["price_jpy"] for r in matched})
+            info["history"] = history.series(hist, it["id"], today, cfg_h["window_days"])
         except Exception as e:
             info["status"] = "error"
             info["error"] = str(e)
@@ -200,12 +235,15 @@ def run(mock=False, today=None, now=None):
             traceback.print_exc()
 
     tr.save()
+    history.save(hist, today, cfg_h["keep_days"])
     opps.sort(key=lambda o: (o["best"] or {}).get("profit_jpy", -10**9), reverse=True)
+    result_history_mode = hist["mode"]
     alert_info = alerts.send(opps, cfg, {k: d["name"] for k, d in dests.items()},
                              sale=saleinfo.as_json(sale_now), mock=mock)
     result = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "sample" if mock else "live",
+        "history_mode": result_history_mode,
         "fx": {"jpy_per": jpy, "usd_jpy": jpy["USD"], "source": fx_src},
         "translation": "sample" if mock else ("DeepL" if tr.key else "off"),
         "sale_now": saleinfo.as_json(sale_now),
@@ -216,6 +254,7 @@ def run(mock=False, today=None, now=None):
         "assumptions": {
             "ebay": cfg["ebay"], "fx_conversion_cost": cfg["fx"]["conversion_cost"],
             "costs": cfg["costs"], "points": cfg.get("points"), "alert_rules": cfg.get("alerts"),
+            "trust": cfg_t, "history": cfg_h,
             "shipping_service": cfg["shipping"]["service"],
             "shipping_table_from": max(t["valid_from"] for t in cfg["shipping"]["tables"]
                                        if date.fromisoformat(t["valid_from"]) <= today),

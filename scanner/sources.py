@@ -101,6 +101,11 @@ class Rakuten:
             "image": (img or "").split("?")[0] or None,
             "item_code": it.get("itemCode"),
             "point_rate": int(it.get("pointRate") or 1),
+            "shop_code": it.get("shopCode"),
+            "review_count": int(it.get("reviewCount") or 0),
+            "review_avg": float(it.get("reviewAverage") or 0),
+            "shop_of_year": bool(int(it.get("shopOfTheYearFlag") or 0)),
+            "caption": (it.get("itemCaption") or "")[:1500],
         }
 
 
@@ -151,7 +156,7 @@ class Ebay:
         return self._token
 
     def search(self, q, marketplace="EBAY_US", currency="USD", ship_to="US", price_range=None,
-               condition="ANY", location_jp=False, limit=100):
+               condition="ANY", location_jp=False, limit=100, exclude_sellers=None):
         filters = ["buyingOptions:{FIXED_PRICE}"]
         if price_range:
             filters.append(f"price:[{price_range[0]:.0f}..{price_range[1]:.0f}]")
@@ -160,6 +165,8 @@ class Ebay:
             filters.append(f"conditions:{{{condition}}}")
         if location_jp:
             filters.append("itemLocationCountry:JP")
+        if exclude_sellers:
+            filters.append("excludeSellers:{" + "|".join(exclude_sellers) + "}")
         headers = {
             "Authorization": f"Bearer {self._get_token()}",
             "X-EBAY-C-MARKETPLACE-ID": marketplace,
@@ -178,14 +185,20 @@ class Ebay:
     def _normalise(i):
         p = i.get("price") or {}
         price = float(p.get("value") or 0)
-        ship = None
+        ship, max_delivery = None, None
         for opt in i.get("shippingOptions") or []:
             cost = (opt.get("shippingCost") or {}).get("value")
-            if cost is not None:
+            if cost is not None and ship is None:
                 ship = float(cost)
-                break
+            max_delivery = max_delivery or opt.get("maxEstimatedDeliveryDate")
+        seller = i.get("seller") or {}
+        fp = seller.get("feedbackPercentage")
         return {
             "source": "ebay",
+            "seller": seller.get("username"),
+            "feedback_score": seller.get("feedbackScore"),
+            "feedback_pct": float(fp) if fp not in (None, "") else None,
+            "max_delivery": max_delivery,
             "title": i.get("title", ""),
             "price": price,
             "shipping": ship,

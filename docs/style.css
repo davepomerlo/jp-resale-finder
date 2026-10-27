@@ -107,3 +107,17 @@ footer { max-width: 860px; margin: 0 auto; padding: 8px 16px 40px; color: var(--
 .filters .check { grid-column: span 1; }
 @media (max-width: 420px) { .filters .check { grid-column: 1 / -1; } }
 .banner.sale { background: var(--accent); color: #fff; }
+
+.chip.trust-good { border-color: var(--gain); color: var(--gain); }
+.chip.trust-bad { background: var(--caution-bg); color: var(--caution-ink); border-color: transparent; }
+.chip.deal-great { background: var(--accent); color: #fff; border-color: transparent; font-weight: 700; }
+.chip.deal-lowest, .chip.deal-drop { background: #e3f4ea; color: #1f6b44; border-color: transparent; font-weight: 600; }
+.chip.deal-new { background: var(--info-bg); color: var(--info-ink); border-color: transparent; }
+.chip.deal-building, .chip.deal-high { color: var(--muted); }
+@media (prefers-color-scheme: dark) { .chip.deal-lowest, .chip.deal-drop { background: #173a27; color: #8fe0b3; } }
+.chart { margin-top: 10px; }
+.chart svg { width: 100%; height: 70px; background: var(--bg); border-radius: 8px; }
+.chart .l-min { fill: none; stroke: var(--gain); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.chart .l-med { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.chart .dot { fill: var(--accent); }
+.k-min { color: var(--gain); } .k-med { color: var(--muted); }

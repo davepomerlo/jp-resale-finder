@@ -47,6 +47,11 @@ for rq, eq, titles, base_jpy, etitle, base_usd, jp_share in SPEC:
             "mediumImageUrls": [],
             "itemCode": f"sample-shop-{i}:{rq[:4]}{i}",
             "pointRate": random.choice([1, 1, 1, 2, 5, 10]),
+            "reviewCount": random.choice([0, 0, 3, 12, 48, 230]),
+            "reviewAverage": random.choice([4.6, 4.3, 3.1, 4.8]),
+            "shopOfTheYearFlag": 1 if i in (2, 5) else 0,
+            "shopCode": f"sample-shop-{i}",
+            "itemCaption": random.choice(["", "", "", "※お取り寄せ商品のため発送まで約2週間かかります。", "海外発送のため到着まで3週間"]),
         })
     rak[rq] = items
     # (marketplace, currency, units per USD, local price multiplier, how many listings)
@@ -61,13 +66,30 @@ for rq, eq, titles, base_jpy, etitle, base_usd, jp_share in SPEC:
             listings.append({
                 "title": etitle + (" (sample)" if i % 3 == 0 else ""),
                 "price": {"value": str(price), "currency": cur},
-                "shippingOptions": [{"shippingCost": {"value": "0.00" if jp else str(round(random.uniform(8, 20) * per_usd, 2)),
-                                                      "currency": cur}}],
                 "itemWebUrl": "https://www.ebay.com/sch/i.html?_nkw=" + eq.replace(" ", "+"),
                 "condition": "New",
                 "itemLocation": {"country": "JP" if jp else random.choice(["US", "US", "GB", "CN"])},
+                "seller": {"username": random.choice(["tokyo_gear", "osaka_select", "japan_direct_shop", f"seller{i}", "newbie_jp"]),
+                           "feedbackScore": random.choice([3, 120, 2400, 15000]),
+                           "feedbackPercentage": random.choice(["99.8", "100.0", "97.1", "99.5"])},
+                "shippingOptions": [{"shippingCost": {"value": "0.00" if jp else str(round(random.uniform(8, 20) * per_usd, 2)),
+                                                      "currency": cur},
+                                     "maxEstimatedDeliveryDate": f"2026-{random.choice(['11-05', '11-08', '12-10'])}T00:00:00.000Z"}],
             })
         eb.setdefault(mk, {})[eq] = listings
+
+# 45 days of made-up history (keys are day offsets from today)
+hist = {"items": {}}
+ids = ["misono-ux10-gyuto-240", "tojiro-dp-gyuto-210", "boss-sd1w-waza", "maxon-od808",
+       "shimano-stella-c3000", "nambu-tetsubin-1l"]
+for iid, (rq, eq, titles, base_jpy, etitle, base_usd, jp_share) in zip(ids, SPEC):
+    days = {}
+    for off in range(-45, 0):
+        drift = 1 + 0.04 * random.uniform(-1, 1)
+        days[str(off)] = {"rak_min": int(base_jpy * 0.98 * drift), "rak_med": int(base_jpy * 1.12 * drift),
+                          "ebay_jpy": {"US": int(base_usd * 150 * (0.95 + off / -900))}}
+    hist["items"][iid] = days
+(HERE / "history_sample.json").write_text(json.dumps(hist, indent=0), encoding="utf-8")
 
 (HERE / "rakuten.json").write_text(json.dumps(rak, ensure_ascii=False, indent=1), encoding="utf-8")
 (HERE / "ebay.json").write_text(json.dumps(eb, ensure_ascii=False, indent=1), encoding="utf-8")

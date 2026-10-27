@@ -77,6 +77,7 @@
     const text = $("#fText").value.trim().toLowerCase();
     const hideLoss = $("#fLoss").checked, hideBlock = $("#fBlock").checked;
     const sort = $("#fSort").value;
+    const onlyGreat = $("#fGreat").checked;
 
     let rows = DATA.opportunities.map((o) => ({ o, f: figure(o, dest) })).filter(({ o, f }) => {
       if (!f) return false;
@@ -85,10 +86,12 @@
       if (hideLoss && f.profit_jpy <= 0) return false;
       if (f.profit_jpy < minP || f.margin < minM) return false;
       if (hideBlock && o.warnings.some((w) => w.level === "block" && (!w.country || w.country === f.country))) return false;
+      if (onlyGreat && !(o.deal && o.deal.great)) return false;
       if (text && !`${o.title_ja} ${o.title_en || ""} ${o.item_name}`.toLowerCase().includes(text)) return false;
       return true;
     });
-    const key = { profit: (r) => r.f.profit_jpy, margin: (r) => r.f.margin, roi: (r) => r.f.roi, buy: (r) => -r.o.buy_jpy }[sort];
+    const key = { profit: (r) => r.f.profit_jpy, margin: (r) => r.f.margin, roi: (r) => r.f.roi, buy: (r) => -r.o.buy_jpy,
+                  deal: (r) => (r.o.deal && r.o.deal.pct_below_typical != null ? r.o.deal.pct_below_typical : -9) }[sort];
     rows.sort((a, b) => key(b) - key(a));
 
     $("#count").textContent = `${rows.length} of ${DATA.opportunities.length} listings` +
@@ -121,11 +124,12 @@
           <p class="t-en">${esc(o.title_en || o.item_name)}</p>
           <p class="t-ja">${esc(o.title_ja)} ${o.title_en ? "" : `· <a href="${gt}" target="_blank" rel="noopener">translate</a>`}</p>
           <div class="chips"><span class="chip">${ICON[o.category] || ""} ${esc(o.item_name)}</span>
-            <span class="chip">${esc(o.shop || "")}</span></div>
+            <span class="chip">${esc(o.shop || "")}</span>${trustChip(o.trust)}</div>
+          ${dealChips(o.deal)}
         </div>
       </div>
       <div class="nums">
-        <div class="num"><b>${yen(o.buy_jpy)}</b><span>Buy${o.postage_included ? "" : " + postage"}${o.points_jpy ? ` · ${o.point_rate}x pts −${yen(o.points_jpy)}` : ""}</span></div>
+        <div class="num"><b>${yen(o.buy_jpy)}</b><span>Buy${o.postage_included ? "" : " + postage"}${o.point_rate >= 2 ? ` · ${o.point_rate}x points` : ""}</span></div>
         <div class="num"><b>${yen(f.sale_jpy)}</b><span>Sell ${money(f.sale_local, f.currency)}</span></div>
         <div class="num"><b class="${f.profit_jpy > 0 ? "gain" : "loss"}">${yen(f.profit_jpy)}</b><span>Profit → ${esc(f.country)}</span></div>
         <div class="num"><b>${pct(f.margin)}</b><span>Margin (ROI ${pct(f.roi)})</span></div>
@@ -148,6 +152,8 @@
         <p class="hint">Sell price = median of ${f.comp_count || 0} current listings on ${esc(siteFor(f))} from ${esc(f.comp_basis || "—")},
           less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut${f.price_source !== "local" ? " (" + esc(f.price_source) + ")" : ""}.
           ${(dc.jp_count ?? 0)} competing listings from Japan there. These are asking prices — check what actually sold before you buy.</p>
+        ${chart(item, o)}
+        ${trustList(o.trust)}
         ${infos.length ? `<ul class="warns">${infos.map(warn).join("")}</ul>` : ""}
       </details>
       <div class="links">
@@ -156,6 +162,46 @@
         <a class="btn alt" href="${esc(safeUrl(activeUrl))}" target="_blank" rel="noopener">eBay listings</a>
       </div>
     </article>`;
+  }
+
+  function trustChip(t) {
+    if (!t) return "";
+    const rev = t.reviews ? ` ★${(t.rating || 0).toFixed(1)} (${t.reviews})` : "";
+    if (t.score >= 2) return `<span class="chip trust-good">✓ Trusted shop${rev}</span>`;
+    if (t.score <= -2) return `<span class="chip trust-bad">⚠ Low trust${rev}</span>`;
+    if (!t.reviews) return `<span class="chip">No reviews yet</span>`;
+    return rev ? `<span class="chip">${rev.trim()}</span>` : "";
+  }
+  function trustList(t) {
+    if (!t || !t.reasons.length) return "";
+    const cls = { good: "info", meh: "caution", bad: "caution" };
+    return `<p class="hint"><b>Shop trust score ${t.score > 0 ? "+" : ""}${t.score}</b></p>
+      <ul class="warns">${t.reasons.map((r) => `<li class="warn ${cls[r.kind]}">${r.kind === "good" ? "✓" : "⚠️"} ${esc(r.text)}</li>`).join("")}</ul>`;
+  }
+  function dealChips(d) {
+    if (!d || !d.tags.length) return "";
+    return `<div class="chips">${d.tags.map((t) => `<span class="chip deal-${esc(t.kind)}">${esc(t.text)}</span>`).join("")}</div>`;
+  }
+  function chart(item, o) {
+    const h = (item.history || []).filter((r) => r[1] || r[2]);
+    if (h.length < 2) return `<p class="hint">Price chart appears after a few days of scans.</p>`;
+    const W = 320, H = 70, P = 4;
+    const vals = h.flatMap((r) => [r[1], r[2]]).concat([o.buy_jpy]).filter(Boolean);
+    const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+    const x = (i) => P + (i * (W - 2 * P)) / (h.length - 1);
+    const y = (v) => H - P - ((v - lo) / span) * (H - 2 * P);
+    const line = (k) => h.map((r, i) => (r[k] ? `${x(i).toFixed(1)},${y(r[k]).toFixed(1)}` : null)).filter(Boolean).join(" ");
+    const d = o.deal || {};
+    const trend = item.ebay_trend_us;
+    return `<div class="chart">
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Rakuten price history">
+        <polyline points="${line(2)}" class="l-med"/><polyline points="${line(1)}" class="l-min"/>
+        <circle cx="${x(h.length - 1)}" cy="${y(o.buy_jpy)}" r="4" class="dot"/>
+      </svg>
+      <p class="hint">Rakuten, last ${h.length} days: <span class="k-min">— cheapest</span> · <span class="k-med">- - typical</span> · ● this listing.
+        ${d.typical ? `Typical ${yen(d.typical)}, previous low ${yen(d.low)}.` : ""}
+        ${trend != null ? ` eBay.com price ${trend >= 0 ? "up" : "down"} ${pct(Math.abs(trend))} over the period.` : ""}</p>
+    </div>`;
   }
 
   function siteFor(f) {
@@ -186,12 +232,24 @@
           ${Object.entries(i.comps_by_dest || {}).map(([code, m]) => `<span>${esc(m.site.replace("www.", ""))} — listings from Japan / all</span><span>${m.jp_count} / ${m.all_count} · ${money(m.local_price, m.currency)}</span>`).join("")}
           <span>Rakuten listings matched</span><span>${i.rakuten_matched ?? "—"} of ${i.rakuten_found ?? "—"}</span>
         </div>
+        ${filteredInfo(i)}
         ${i.error ? `<ul class="warns"><li class="warn block">Error: ${esc(i.error)}</li></ul>` : ""}
         <div class="links">
           <a class="btn hot" href="${esc(safeUrl(i.sold_url))}" target="_blank" rel="noopener">eBay sold prices</a>
           <a class="btn alt" href="${esc(safeUrl(i.rakuten_search_url))}" target="_blank" rel="noopener">Rakuten search</a>
         </div></article>`;
     }).join("");
+  }
+
+  function filteredInfo(i) {
+    const hid = i.rakuten_hidden || [];
+    const f = ((i.comps_by_dest || {}).US || {}).filtered || {};
+    const fTotal = Object.values(f).reduce((a, b) => a + b, 0);
+    if (!hid.length && !fTotal) return "";
+    return `<details><summary>Filtered out: ${hid.length} Rakuten listing${hid.length === 1 ? "" : "s"}, ${fTotal} eBay.com listing${fTotal === 1 ? "" : "s"}</summary>
+      ${hid.length ? `<ul class="warns">${hid.map((h) => `<li class="warn caution">${esc(h.shop)}: ${esc(h.why)}</li>`).join("")}</ul>` : ""}
+      ${fTotal ? `<div class="kv" style="margin-top:8px">${Object.entries(f).map(([k, v]) => `<span>${esc(k)}</span><span>${v}</span>`).join("")}</div>` : ""}
+    </details>`;
   }
 
   // ------------------------------------------------------------- rules
@@ -242,12 +300,26 @@
     const alertRows = [["Status", alertState.enabled ? `on — ${alertState.sent} sent last scan` : `off (${esc(alertState.reason || "")})`],
       ["Alert when profit ≥", yen(al.min_profit_jpy)], ["…and margin ≥", pct1(al.min_margin)],
       ["Max alerts per scan", al.max_per_run], ["Re-alert same listing if profit rises", pct1(al.realert_if_profit_up)]];
+    const tr = a.trust || {}, tre = tr.ebay || {}, trr = tr.rakuten || {}, hc = a.history || {};
+    const trustRows = [["Rakuten: hide listings scoring below", trr.hide_below_score],
+      ["Rakuten: drop-ship / back-order words", esc((trr.dropship_words || []).join(", "))],
+      ["Rakuten: blocked / trusted shops", `${(trr.blocked_shops || []).length} / ${(trr.trusted_shops || []).length}`],
+      ["eBay comps: min seller feedback", `${tre.min_feedback_score} ratings, ${tre.min_feedback_pct}% positive`],
+      ["eBay comps: max estimated delivery", tre.max_delivery_days + " days"],
+      ["eBay comps: one listing per seller", tre.one_listing_per_seller ? "yes" : "no"],
+      ["eBay sellers excluded", (tre.exclude_sellers || []).length]];
+    const histRows = [["History", DATA.history_mode === "sample" ? "sample (made-up)" : "built from your scans"],
+      ["Compared against", `last ${hc.window_days} days`], ["Tags start after", `${hc.min_days} days of scans`],
+      ["🔥 Great deal when", `${pct1(hc.great_deal_below_typical)} below typical price`],
+      ["↓ Price-drop tag when", `listing falls ${pct1(hc.price_drop_min)}+`]];
     const kv = (rs) => `<div class="kv">${rs.map(([k, v]) => `<span>${k}</span><span>${v}</span>`).join("")}</div>`;
     $("#costs").innerHTML = `<div class="section"><h3>Scan schedule</h3>${kv(schedRows)}
       <p class="hint">Add お買い物マラソン (Shopping Marathon) and other sale dates under <code>sales: windows</code> in config.yaml when Rakuten announces them. 楽天スーパーSALE (Super Sale) is detected automatically.</p></div>
       <div class="section"><h3>Push alerts</h3>${kv(alertRows)}</div>
       <div class="section"><h3>Fees &amp; costs</h3>${kv(rows)}</div>
       <div class="section"><h3>楽天ポイント (Rakuten points)</h3>${kv(ptsRows)}</div>
+      <div class="section"><h3>Seller trust filters</h3>${kv(trustRows)}</div>
+      <div class="section"><h3>Price history &amp; deal tags</h3>${kv(histRows)}</div>
       <div class="section"><h3>Exchange rates</h3>${kv(fxRows)}<p class="hint">${esc(DATA.fx.source)}</p></div>
       <div class="section"><h3>Destinations</h3>${kv(dests)}
       <p class="hint">Japan Post raises international rates on 1 Feb 2027 (e.g. EMS to the US for 1 kg: ¥5,300 → ¥7,400). The app switches tables automatically on that date.</p></div>`;

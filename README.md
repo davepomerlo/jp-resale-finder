@@ -81,6 +81,41 @@ December. Rakuten Black Friday 2026 is pre-filled as a **prediction**, so correc
 **Before you buy anything, tap "Check eBay sold prices" on the card.** The profit estimate is based on current
 *asking* prices, because eBay limits its sold-price data to approved partners.
 
+## Filtering out drop-shippers and weak sellers
+**Rakuten listings** get a trust score (`scanner/trust.py`):
+
+| Signal | Score |
+|---|---|
+| Shop is on your `trusted_shops` list | +3 |
+| 楽天ショップ・オブ・ザ・イヤー (Rakuten Shop of the Year) | +2 |
+| 10+ reviews averaging ★4.0+ | +1 |
+| No reviews at all | −1 |
+| Back-order or overseas words: お取り寄せ (made to order from supplier), 海外発送 (ships from overseas), 予約 (pre-order), 入荷待ち (awaiting stock), etc. | −2 |
+| 5+ reviews averaging under ★3.5 | −2 |
+| Shop is on your `blocked_shops` list | −5 |
+
+Listings scoring below −2 are hidden. The Watchlist tab shows what was hidden and why.
+
+**eBay comparison listings** are cleaned before the sell price is calculated. The scan drops:
+- sellers with fewer than 50 feedback ratings or under 98% positive
+- listings with an estimated delivery over 25 days, which usually means a drop-shipper or pre-order
+- titles that say pre-order, made to order or backorder
+- any sellers in your `exclude_sellers` list
+- extra listings from the same seller, so one big drop-shipper can't push up the median
+
+Change all of these under `trust:` in `config.yaml`.
+
+## Price history and 🔥 great-deal tags
+Each scan records the cheapest and typical Rakuten price for every watchlist item, plus each listing's price, in
+`docs/data/history.json`. After 7 days of scans, cards get tags:
+- **🔥 Great deal:** 15%+ below the item's typical price over the last 60 days.
+- **📉 Lowest price in 60 days.**
+- **↓ ¥X since <date>:** this listing has dropped 5% or more since it was last seen.
+- **🆕 New listing.**
+
+The card details show a 60-day price chart, and the Deals tab can filter to great deals only or sort by deal. Great deals
+also get top priority in push alerts. Rakuten has no price-history API, so **history starts from your first scan**.
+
 ## How profit is estimated
 
 ```

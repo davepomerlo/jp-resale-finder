@@ -6,6 +6,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scanner"))
 import alerts  # noqa: E402
+import history  # noqa: E402
+import trust  # noqa: E402
 import profit  # noqa: E402
 import saleinfo  # noqa: E402
 import rules as rules_mod  # noqa: E402
@@ -86,3 +88,46 @@ def test_knife_blocked_for_uk_and_keyword_flags():
 def test_id_check_categories():
     warns, _ = rules_mod.warnings_for({"category": "game"}, "ゲーム", None, RULES, [])
     assert any("ANY price" in w["text"] for w in warns)
+
+
+def test_rakuten_trust_scoring():
+    t = CFG["trust"]
+    good = {"title": "BOSS SD-1W", "shop": "A", "shop_of_year": True, "review_count": 40, "review_avg": 4.7}
+    score, reasons, hidden = trust.rakuten_score(good, t)
+    assert score == 3 and not hidden
+    bad = {"title": "BOSS SD-1W お取り寄せ", "shop": "B", "review_count": 8, "review_avg": 3.0}
+    score, reasons, hidden = trust.rakuten_score(bad, t)
+    assert score == -4 and hidden
+    blocked = {"title": "x", "shop": "Bad Shop", "review_count": 50, "review_avg": 4.9}
+    tt = {**t, "rakuten": {**t["rakuten"], "blocked_shops": ["bad shop"]}}
+    assert trust.rakuten_score(blocked, tt)[2] is True
+
+
+def test_ebay_comp_cleaning():
+    t = CFG["trust"]
+    mk = lambda seller, total, fs=500, fp=99.9, title="x", md=None: {  # noqa: E731
+        "seller": seller, "total": total, "feedback_score": fs, "feedback_pct": fp, "title": title, "max_delivery": md}
+    comps = [mk("a", 100), mk("a", 90), mk("b", 120, fs=3), mk("c", 130, fp=95.0),
+             mk("d", 110, title="Pre-order Japan"), mk("e", 140, md="2026-12-30T00:00:00Z"), mk("f", 150)]
+    kept, removed = trust.clean_ebay(comps, t, date(2026, 10, 27))
+    assert sorted(c["seller"] for c in kept) == ["a", "f"]
+    assert [c["total"] for c in kept if c["seller"] == "a"] == [90]
+    assert removed["slow delivery"] == 1 and removed["duplicate listings from same seller"] == 1
+
+
+def test_history_deal_tags():
+    h = {"mode": "live", "items": {}, "listings": {}}
+    cfg_h = CFG["history"]
+    today = date(2026, 10, 27)
+    from datetime import timedelta
+    for off in range(1, 31):
+        h["items"].setdefault("x", {})[(today - timedelta(days=off)).isoformat()] = {"rak_min": 9000, "rak_med": 10000}
+    h["_had_listings"] = True
+    h["listings"]["x::1"] = {"first_seen": "2026-10-01", "last_seen": "2026-10-26", "last_price": 9500, "low": 9500}
+    r = history.tags_for(h, "x", "x::1", 8000, today, cfg_h)
+    kinds = {t["kind"] for t in r["tags"]}
+    assert r["great"] and {"great", "lowest", "drop"} <= kinds
+    r2 = history.tags_for(h, "x", "x::2", 9800, today, cfg_h)
+    assert not r2["great"] and "new" in {t["kind"] for t in r2["tags"]}
+    empty = {"mode": "live", "items": {}, "listings": {}}
+    assert history.tags_for(empty, "x", "x::1", 8000, today, cfg_h)["tags"][0]["kind"] == "building"

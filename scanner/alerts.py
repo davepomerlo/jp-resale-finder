@@ -35,16 +35,20 @@ def pick(opps, cfg_alerts, state, now=None):
         if prev and b["profit_jpy"] < prev["profit_jpy"] * (1 + cfg_alerts["realert_if_profit_up"]):
             continue
         chosen.append(o)
-    chosen.sort(key=lambda o: o["best"]["profit_jpy"], reverse=True)
+    chosen.sort(key=lambda o: ((o.get("deal") or {}).get("great", False), o["best"]["profit_jpy"]), reverse=True)
     return chosen[: cfg_alerts["max_per_run"]]
 
 
 def _message(o, dest_names, app_url, sale):
     b = o["best"]
-    title = f"¥{b['profit_jpy']:,} profit · {o['item_name']}"
+    great = (o.get("deal") or {}).get("great")
+    title = ("🔥 " if great else "") + f"¥{b['profit_jpy']:,} profit · {o['item_name']}"
     body = (f"{o.get('title_en') or o['title_ja']}\n"
             f"Buy ¥{o['buy_jpy']:,} on Rakuten → sell to {dest_names.get(b['country'], b['country'])} "
             f"(margin {b['margin']:.0%}).")
+    for t in (o.get("deal") or {}).get("tags", []):
+        if t["kind"] in ("great", "lowest", "drop"):
+            body += "\n" + t["text"]
     if o.get("points_jpy"):
         body += f" Includes ¥{o['points_jpy']:,} in points."
     if sale:
@@ -52,7 +56,7 @@ def _message(o, dest_names, app_url, sale):
     body += "\nCheck eBay sold prices before buying."
     return {
         "title": title, "message": body, "click": o["url"], "tags": ["moneybag"],
-        "priority": 4 if b["margin"] >= 0.25 else 3,
+        "priority": 5 if great else (4 if b["margin"] >= 0.25 else 3),
         "actions": [{"action": "view", "label": "Open app", "url": app_url},
                     {"action": "view", "label": "Rakuten", "url": o["url"]}],
     }

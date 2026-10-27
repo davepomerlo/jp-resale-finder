@@ -89,3 +89,27 @@ scan:
   candidates_per_item: 5        # cheapest matching Rakuten listings kept per item
   ebay_limit: 100
   thin_margin_warning: 0.15     # warn when margin is below this
+
+# Filters against drop-shippers and untrustworthy sellers.
+trust:
+  rakuten:
+    hide_below_score: -2       # listings scoring lower are hidden (see scanner/trust.py for the scoring)
+    # words in the title or description that suggest the shop doesn't hold stock
+    dropship_words: [お取り寄せ, 取り寄せ, 取寄, 海外発送, 海外直送, 予約, 受注生産, 入荷待ち, 納期, 発送まで約, 発送目安]
+    blocked_shops: []          # shop names or shop codes you never want to see
+    trusted_shops: []          # shops you've bought from happily
+  ebay:
+    min_feedback_score: 50     # ignore comparison listings from sellers with less feedback
+    min_feedback_pct: 98.0
+    max_delivery_days: 25      # longer estimated delivery suggests drop-shipping or pre-order
+    dropship_words: [pre-order, preorder, made to order, backorder, back order, ships in 2, ships in 3, weeks to ship]
+    exclude_sellers: []        # eBay user IDs to ignore (sent to eBay as a filter)
+    one_listing_per_seller: true   # stops one big seller with many listings from skewing the price
+
+# Price history kept by the app (builds up from your first scan).
+history:
+  keep_days: 120
+  window_days: 60              # compare against the last 60 days
+  min_days: 7                  # need this many days before tagging great deals
+  great_deal_below_typical: 0.15   # 🔥 when 15%+ below the item's typical Rakuten price
+  price_drop_min: 0.05         # 📉 tag when a listing drops 5%+ since it was last seen
