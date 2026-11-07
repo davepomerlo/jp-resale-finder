@@ -57,7 +57,8 @@ for rq, eq, titles, base_jpy, etitle, base_usd, jp_share in SPEC:
     # (marketplace, currency, units per USD, local price multiplier, how many listings)
     markets = [("EBAY_US", "USD", 1.0, 1.0, 14), ("EBAY_GB", "GBP", 0.78, 1.08, 8),
                ("EBAY_AU", "AUD", 1.52, 1.12, 7), ("EBAY_DE", "EUR", 0.92, 1.0, 6),
-               ("EBAY_CA", "CAD", 1.38, 1.05, random.choice([2, 6]))]
+               ("EBAY_FR", "EUR", 0.92, 1.04, random.choice([2, 6])), ("EBAY_IT", "EUR", 0.92, 0.98, 4),
+               ("EBAY_NL", "EUR", 0.92, 1.02, random.choice([1, 4])), ("EBAY_SG", "SGD", 1.30, 1.10, random.choice([0, 3]))]
     for mk, cur, per_usd, mult, n in markets:
         listings = []
         for i in range(n):

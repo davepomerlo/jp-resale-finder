@@ -9,6 +9,8 @@
   const pct1 = (n) => (n == null ? "—" : +(n * 100).toFixed(2) + "%");
   const money = (n, cur) => (n == null ? "—" : new Intl.NumberFormat("en-GB", { style: "currency", currency: cur || "USD", maximumFractionDigits: 0 }).format(n));
   const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "#");
+  const TAX = { ebay_collects: "eBay collects VAT/GST at checkout", buyer_on_delivery: "buyer pays on delivery (refusal risk in reserve)",
+    seller_prepays: "you prepay duty (DDP)", none: "none" };
   const ICON = { knife: "🔪", pedal: "🎸", record: "💿", cd_dvd: "💿", game: "🎮", book: "📚", fishing: "🎣",
                  watch: "⌚", kitchenware: "🫖", kimono: "👘", cards: "🃏" };
   const LEVEL_ICON = { block: "🚫", caution: "⚠️", info: "ℹ️" };
@@ -96,7 +98,7 @@
     rows.sort((a, b) => key(b) - key(a));
 
     $("#count").textContent = `${rows.length} of ${DATA.opportunities.length} listings` +
-      (dest === "best" ? " · profit shown for the best allowed destination" : ` · profit if shipped to ${DATA.destinations[dest].name}`);
+      (dest === "best" ? " · profit shown for your main market (US first; set in config.yaml)" : ` · profit if shipped to ${DATA.destinations[dest].name}`);
     $("#deals").innerHTML = rows.length ? rows.map(({ o, f }) => card(o, f)).join("")
       : `<div class="empty">Nothing matches these filters.<br>Try lowering the minimum profit or turning off "Hide losses".</div>`;
   }
@@ -104,8 +106,8 @@
   function card(o, f) {
     const item = DATA.items.find((i) => i.id === o.item_id) || {};
     const dc = (item.comps_by_dest || {})[f.country] || item.comps || {};
-    const soldUrl = f.price_source === "local" && dc.sold_url ? dc.sold_url : item.sold_url;
-    const activeUrl = f.price_source === "local" && dc.active_url ? dc.active_url : item.active_url;
+    const soldUrl = dc.sold_url || item.sold_url;
+    const activeUrl = dc.active_url || item.active_url;
     const destName = (c) => (DATA.destinations[c] || {}).name || c;
     const relevant = o.warnings.filter((w) => !w.country || w.country === f.country);
     const top = dedupe(relevant.filter((w) => w.level !== "info"));
@@ -113,11 +115,20 @@
     const thumb = o.image ? `<img class="thumb" src="${esc(safeUrl(o.image))}" alt="" loading="lazy">`
       : `<div class="thumb">${ICON[o.category] || "📦"}</div>`;
     const gt = "https://translate.google.com/?sl=ja&tl=en&op=translate&text=" + encodeURIComponent(o.title_ja);
-    const destChips = Object.entries(o.per_dest).map(([c, r]) => {
+    const chip = ([c, r]) => {
       if (!r.ok) return `<span class="dest">${esc(c)} n/a</span>`;
-      const cls = r.blocked ? "dest blocked" : (c === f.country ? "dest best" : "dest");
+      const cls = r.blocked ? "dest blocked" : (c === f.country ? "dest best" : (r.profit_jpy > 0 ? "dest" : "dest neg"));
       return `<span class="${cls}" title="${esc(destName(c))}">${esc(c)} ${r.blocked ? "blocked" : yen(r.profit_jpy)}</span>`;
-    }).join("");
+    };
+    const ranked = Object.entries(o.per_dest).sort(([, a], [, b]) =>
+      ((b.ok && !b.blocked) ? b.profit_jpy : -1e9) - ((a.ok && !a.blocked) ? a.profit_jpy : -1e9));
+    const head = ranked.filter(([c]) => c === f.country);
+    const destChips = [...head, ...ranked.filter(([c]) => c !== f.country).slice(0, 5)].map(chip).join("");
+    const allChips = ranked.map(chip).join("");
+    const w = o.worldwide || {};
+    const worldLine = w.countries ? `<p class="hint">🌍 Profitable to ${(w.profitable || []).length} of ${w.countries} countries` +
+      `${w.lowest != null ? ` · range ${yen(w.lowest)} to ${yen(w.highest)}${w.highest_country ? ` (${esc(w.highest_country)})` : ""}` : ""}.` +
+      `${(w.exclude || []).length ? ` In your eBay shipping policy, exclude: <b>${(w.exclude || []).map(esc).join(", ")}</b>.` : " Safe to offer worldwide shipping."}</p>` : "";
 
     return `<article class="card">
       <div class="card-head">${thumb}
@@ -136,6 +147,7 @@
         <div class="num"><b>${pct(f.margin)}</b><span>Margin (ROI ${pct(f.roi)})</span></div>
       </div>
       <div class="dests">${destChips}</div>
+      ${worldLine}
       ${o.sell_speed && o.sell_speed.days ? `<p class="hint">⏱ Sells in about ${Math.round(o.sell_speed.days)} days (${esc(o.sell_speed.source)}) · ≈ ${yen(f.profit_per_week)} profit per week of selling time</p>` : ""}
       ${top.length ? `<ul class="warns">${top.map(warn).join("")}</ul>` : ""}
       <details>
@@ -144,7 +156,7 @@
           <tr><td>Sale price ${money(f.sale_local, f.currency)} on ${esc(siteFor(f))} → yen, after conversion cost</td><td>${yen(f.revenue_jpy)}</td></tr>
           <tr><td>eBay fees (${esc(f.fee_source)})</td><td>−${yen(f.ebay_fees_jpy)}</td></tr>
           <tr><td>Shipping to ${esc(destName(f.country))}: ${esc(svcName(f.shipping_service))} (${o.weight_g} g, ${esc(f.shipping_source)})</td><td>−${yen(f.shipping_jpy)}</td></tr>
-          ${f.duty_jpy ? `<tr><td>Import duty you prepay (DDP)</td><td>−${yen(f.duty_jpy)}</td></tr>` : ""}
+          ${f.duty_jpy ? `<tr><td>Import duty you prepay (DDP)</td><td>−${yen(f.duty_jpy)}</td></tr>` : `<tr><td>Import tax: ${esc(TAX[f.import_tax] || "buyer pays any import tax")}</td><td>¥0</td></tr>`}
           <tr><td>Rakuten price</td><td>−${yen(f.buy_jpy)}</td></tr>
           ${f.points_jpy ? `<tr><td>楽天ポイント (Rakuten points): shop ${o.point_rate}x${DATA.assumptions.points.extra_rate_pct ? ` + your extra ${DATA.assumptions.points.extra_rate_pct}x` : ""}</td><td>+${yen(f.points_jpy)}</td></tr>` : ""}
           ${f.domestic_postage_jpy ? `<tr><td>Domestic postage (not included in listing)</td><td>−${yen(f.domestic_postage_jpy)}</td></tr>` : ""}
@@ -154,9 +166,10 @@
           <tr class="total"><td>Estimated profit</td><td class="${f.profit_jpy > 0 ? "gain" : "loss"}">${yen(f.profit_jpy)}</td></tr>
         </table>
         <p class="hint">Sell price = median of ${f.comp_count || 0} current listings on ${esc(siteFor(f))} from ${esc(f.comp_basis || "—")},
-          less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut.${f.price_source !== "local" ? ` ${esc((DATA.destinations[f.country] || {}).site || "")} had too few listings, so the eBay.com price is used.` : ` ${(dc.jp_count ?? 0)} competing listings from Japan there.`}
+          less ${Math.round((1 - DATA.assumptions.ebay.undercut) * 100)}% to undercut.${f.price_source !== "local" ? ` Priced from ${esc(f.price_source)}.` : ` ${(dc.jp_count ?? 0)} competing listings from Japan there.`}
           These are asking prices — check what actually sold before you buy.</p>
         ${f.fx ? `<p class="hint">💱 If the yen gets 5% stronger: <b class="${f.fx.yen_stronger_5 > 0 ? "gain" : "loss"}">${yen(f.fx.yen_stronger_5)}</b> · 5% weaker: <b class="gain">${yen(f.fx.yen_weaker_5)}</b></p>` : ""}
+        <p class="hint">Profit by country:</p><div class="dests">${allChips}</div>
         ${chart(item, o)}
         ${trustList(o.trust)}
         ${infos.length ? `<ul class="warns">${infos.map(warn).join("")}</ul>` : ""}
@@ -214,7 +227,7 @@
   }
 
   function siteFor(f) {
-    return f.price_source === "local" ? (DATA.destinations[f.country] || {}).site || "ebay.com" : "www.ebay.com";
+    return ((DATA.markets || {})[f.market] || {}).site || "www.ebay.com";
   }
 
   function dedupe(ws) {
@@ -269,7 +282,7 @@
             <div class="chips"><span class="chip">${esc(i.label)}</span>
               <span class="chip" style="${ok ? "" : "color:var(--loss)"}">${esc(i.status)}</span></div></div></div>
         <div class="kv" style="margin-top:10px">
-          ${Object.entries(i.comps_by_dest || {}).map(([code, m]) => `<span>${esc(m.site.replace("www.", ""))} — listings from Japan / all</span><span>${m.jp_count} / ${m.all_count} · ${money(m.local_price, m.currency)}</span>`).join("")}
+          ${Object.entries(i.comps_by_market || i.comps_by_dest || {}).map(([code, m]) => `<span>${esc(m.site.replace("www.", ""))} — listings from Japan / all</span><span>${m.jp_count} / ${m.all_count} · ${money(m.local_price, m.currency)}</span>`).join("")}
           <span>Sell speed</span><span>${i.sell_speed && i.sell_speed.days ? `~${Math.round(i.sell_speed.days)} days (${esc(i.sell_speed.source)})` : "unknown — add days_to_sell from Terapeak"}</span>
           ${i.your_last_sale ? `<span>Your last sale</span><span>${yen(i.your_last_sale.sale_jpy)} → ${esc(i.your_last_sale.country)} (${esc(i.your_last_sale.date)})</span>` : ""}
           <span>Rakuten listings matched</span><span>${i.rakuten_matched ?? "—"} of ${i.rakuten_found ?? "—"}</span>
@@ -329,7 +342,8 @@
       ["Translation", esc(DATA.translation)],
     ];
     const dests = Object.entries(DATA.destinations).map(([k, d]) =>
-      [`${esc(d.name)} — ${esc(d.site.replace("www.", ""))}, ${esc(d.currency)}, EMS zone ${d.zone}`, d.duty ? `you prepay ~${pct1(d.duty)} duty` : "buyer pays any import tax"]);
+      [`${esc(d.name)} — priced from ${esc((((DATA.markets || {})[d.market] || {}).site || "www.ebay.com").replace("www.", ""))}, zone ${d.zone}`,
+        d.duty ? `you prepay ~${pct1(d.duty)} duty` : esc(TAX[d.import_tax] || "buyer pays any import tax")]);
     const fxRows = Object.entries(DATA.fx.jpy_per || { USD: DATA.fx.usd_jpy }).map(([c, v]) => [`1 ${esc(c)}`, `¥${v}`]);
     const p = a.points || {}, al = a.alert_rules || {}, alertState = DATA.alerts || {};
     const ptsRows = [["Counted as discount", p.enabled ? "yes" : "no"], ["Shop rate", "from Rakuten, per listing"],

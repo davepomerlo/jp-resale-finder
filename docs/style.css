@@ -127,3 +127,4 @@ pre.yaml { background: var(--bg); padding: 8px; border-radius: 8px; font-size: 1
 button.btn { border: 0; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .tab { font-size: 13.5px; padding-left: 2px; padding-right: 2px; }
 td:last-child { white-space: nowrap; }
+.dest.neg { color: var(--loss); }

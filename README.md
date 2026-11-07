@@ -1,8 +1,10 @@
 # Japan Resale Finder
 
-A personal research tool. It checks 楽天市場 (Rakuten Ichiba) prices for items on your watchlist, compares them with
-each country's own eBay site (eBay.com, .ca, .co.uk, .com.au, .de) and converts everything to yen. It then estimates
-your profit after fees, shipping, duty and 楽天ポイント (Rakuten points) for each country. It also flags licence, legal
+A personal research tool for one business model: **buy on 楽天市場 (Rakuten Ichiba), sell on eBay worldwide.**
+It checks Rakuten prices for items on your watchlist and compares them with current listings on the 12 eBay sites
+that eBay's search API supports (eBay.com, .co.uk, .de, .fr, .it, .es, .nl, .ie, .at, .pl, .com.au, .com.sg). It converts
+everything to yen and estimates your profit for 34 buyer countries after fees, Japan Post shipping, import tax
+handling and 楽天ポイント (Rakuten points). It also flags licence, legal
 and shipping problems, such as knives to the UK, and can send push alerts to your phone.
 
 - **Scanner** (`scanner/`): Python. GitHub Actions runs it at 05:07 and 20:07 JST every day, and hourly from 20:37 to 23:37
@@ -155,10 +157,33 @@ along with a ready-to-paste watchlist entry. Treat these as leads only: check th
   the 10% tax paid on stock. Most side businesses aren't registered, so this is off. Set `tax: consumption_tax_refund:
   true` only if your tax accountant confirms you're registered.
 
+## Selling worldwide
+Every card shows the profit for your **main market** (the US first, then the UK, Germany, Australia, Canada, France
+and Italy, set under `scan: headline_order`). You can't choose where buyers live, so the card doesn't headline the
+cheapest country to ship to. Underneath you get:
+- the six best countries, with all 34 under "Breakdown";
+- the profit range worldwide;
+- **"In your eBay shipping policy, exclude: …"**: the countries where the item is blocked or would lose money.
+  Copy these into the excluded locations of your eBay shipping policy.
+
+How each country is handled (in `config.yaml` → `destinations`):
+- **Price:** the country's own eBay site where the API supports it. Canada, Mexico, Asia, the Middle East, Brazil and
+  South Africa use eBay.com. Belgium uses eBay.nl; Switzerland, Norway and the Nordic countries use eBay.de; Portugal
+  uses eBay.es; New Zealand uses eBay.com.au. If a site has fewer than 3 listings, eBay.com is used.
+- **Shipping:** the Japan Post zone (1 China/Korea/Taiwan, 2 rest of Asia, 3 Europe/Oceania/Canada/Mexico/Middle East,
+  4 US, 5 Latin America/Africa), with the cheaper of EMS and airmail parcel.
+- **Import tax:**
+  - UK, EU, Norway, Switzerland, Australia and New Zealand: eBay collects VAT/GST at checkout, so the buyer has
+    nothing to pay on delivery.
+  - US: you prepay the duty (DDP).
+  - Everywhere else (Canada, Asia, Latin America, the Middle East, Africa): the buyer pays on delivery, and some refuse
+    the parcel. An extra 2% reserve covers that (`risk: on_delivery_tax_extra`).
+- **Not listed** (e.g. Russia, where Japan Post has suspended service): exclude these in your eBay shipping policy.
+
 ## How profit is estimated
 
 ```
-sell price  = median of current listings on that country's eBay site from Japan-based sellers
+sell price  = median of current listings on the buyer country's eBay site (see above) from Japan-based sellers
               (or all sellers if fewer than 3) × 97%, converted to yen at the day's ECB rate.
               If the local site has fewer than 3 listings, the eBay.com price is used instead.
 profit      = sell price in yen − currency conversion cost
@@ -175,8 +200,9 @@ The rates marked ASSUMPTION in `config.yaml`, such as the international fee and 
 against your first eBay invoice.
 
 ## Limits worth knowing
-- Each scan makes about 10 eBay calls per watchlist item (5 sites × 2 searches). eBay's default Browse API allowance
-  is several thousand calls a day, which covers dozens of items even with hourly sale scans.
+- Each scan makes about 24 eBay calls per watchlist item (12 sites × 2 searches). eBay's default Browse API allowance
+  is 5,000 calls a day, enough for about 30 watchlist items on sale days (6 scans). To track more, search fewer sites
+  with `scan: markets` in `config.yaml`; countries whose site isn't searched use the eBay.com price.
 - Points during 買いまわり (shop-hopping) only count if you actually buy from enough shops, so keep `extra_rate_pct`
   realistic.
 - Matching relies on keywords, so tune `must_include` and `exclude` when you see wrong items.

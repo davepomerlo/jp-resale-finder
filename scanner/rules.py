@@ -35,3 +35,12 @@ def warnings_for(item_cfg, title_ja, title_en, rules, dest_codes):
             out.append({**w, "scope": "country", "country": code})
 
     return out, blocked
+
+
+def country_warnings(rules, code):
+    """Rules for one destination country, including any group it belongs to (e.g. EU)."""
+    out = list((rules.get("destinations") or {}).get(code, []))
+    for group, members in (rules.get("destination_groups") or {}).items():
+        if code in members:
+            out += (rules.get("destinations") or {}).get(group, [])
+    return out

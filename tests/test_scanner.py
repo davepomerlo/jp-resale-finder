@@ -180,3 +180,21 @@ def test_history_deal_tags():
     assert not r2["great"] and "new" in {t["kind"] for t in r2["tags"]}
     empty = {"mode": "live", "items": {}, "listings": {}}
     assert history.tags_for(empty, "x", "x::1", 8000, today, cfg_h)["tags"][0]["kind"] == "building"
+
+
+def test_worldwide_destinations_and_headline():
+    import scan
+    cfg = CFG
+    dests = cfg["destinations"]
+    assert all(isinstance(k, str) for k in dests), "a country code was read as true/false (quote NO, ON, YES...)"
+    assert "NO" in dests and len(dests) >= 30
+    for code, d in dests.items():
+        assert d["market"] in cfg["markets"], code
+        assert d["zone"] in (1, 2, 3, 4, 5), code
+    for z in (1, 2, 3, 4, 5):
+        assert profit.cheapest_shipping(cfg["shipping"], z, 900)[0], z
+    res = scan.run(mock=True)
+    o = next(o for o in res["opportunities"] if o["best"])
+    assert o["best"]["country"] == "US" or "US" in o["worldwide"]["exclude"] or o["per_dest"]["US"].get("blocked")
+    assert len(o["per_dest"]) == len(dests)
+    assert set(o["worldwide"]["exclude"]) >= set(o["blocked"])

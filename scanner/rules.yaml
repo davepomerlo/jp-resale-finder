@@ -7,14 +7,47 @@ global:
     text: "古物商許可 (secondhand dealer licence) needed to buy used goods for resale. Even unused items bought at retail can count as 古物 (secondhand goods) — confirm with your police station."
     source: https://ayusawa-partners.jp/column/kobutsushou-shinsei-guide
 
+# Shown on a card when that country is the most profitable destination. A group (e.g. EU) applies to every
+# country listed under destination_groups.
+destination_groups:
+  EU: [IE, DE, FR, IT, ES, NL, BE, AT, PL, PT, SE, DK, FI, GR, CZ]
+
 destinations:
   US:
     - level: caution
-      text: "US: no duty-free threshold. Duties must be prepaid through Japan Post's certified app (DDP label) before posting."
-      source: https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01_en.html
+      text: "US: no duty-free threshold. Since 15 Oct 2026 every post office accepts US parcels, but goods you sold need a pre-declaration in Japan Post's partner app (Zonos) with duty prepaid and a DDP label."
+      source: https://www.post.japanpost.jp/service/send/oversea/information/2026/0413_01.html
     - level: info
       text: "US duty estimate: 12.5% total on most Japanese goods (Section 301, since 24 Jul 2026). Rate is set in config.yaml."
       source: https://www.nippon.com/en/news/yjj2026072400325/
+  EU:
+    - level: info
+      text: "EU: eBay collects VAT at checkout on orders up to €150. Since 1 Jul 2026 a €3 customs duty also applies; with your own Japan Post shipping the carrier may collect it (plus a handling fee) from the buyer."
+      source: https://www.ebay.ca/help/buying/paying-items/paying-tax-ebay-purchases?id=4771
+  GB:
+    - level: info
+      text: "UK: eBay collects VAT on orders up to £135. Above that the buyer pays VAT and a carrier fee on delivery."
+      source: https://export.ebay.com/en/fees-regulations-policies/taxes/vat
+  CA:
+    - level: caution
+      text: "Canada: eBay doesn't collect import tax for parcels from Japan. The buyer pays GST/HST (and any duty) plus a Canada Post handling fee on delivery — a common cause of refused parcels. Say so in the listing."
+  AU:
+    - level: info
+      text: "Australia: eBay adds GST at checkout (orders up to A$1,000) — write eBay's ABN and code PAID on the customs form. Declare any wooden parts (knife handles, saya); Australia inspects wood."
+      source: https://www.ebay.com/help/policies/selling-policies/tax-policy?id=4348
+  NZ:
+    - level: info
+      text: "New Zealand: eBay adds GST at checkout (orders up to NZ$1,000) — write eBay's IRD number and code PAID on the customs form. Declare any wooden parts."
+      source: https://www.ebay.com/help/policies/selling-policies/tax-policy?id=4348
+  BR:
+    - level: caution
+      text: "Brazil: very high import taxes paid by the buyer on delivery, and slow customs. Many Japan sellers exclude Brazil."
+  MX:
+    - level: caution
+      text: "Mexico: buyer pays import tax on delivery and parcels can be slow through customs."
+  ZA:
+    - level: caution
+      text: "South Africa: buyer pays VAT and duty on delivery; parcels can be slow through customs."
 
 categories:
   knife:

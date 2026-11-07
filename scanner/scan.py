@@ -2,9 +2,10 @@
 
 For each watchlist item:
   1. find the cheapest matching listings on 楽天市場 (Rakuten Ichiba), incl. 楽天ポイント (points)
-  2. for every destination, find comparable listings on that country's eBay site
-     (eBay.com, .ca, .co.uk, .com.au, .de) — Japan-based sellers first — in local currency
-  3. convert to yen and estimate profit per destination
+  2. search the 12 eBay sites the API supports (eBay.com, .co.uk, .de, .fr, .it, .es, .nl, .ie, .at, .pl,
+     .com.au, .com.sg) for comparable listings — Japan-based sellers first — in local currency
+  3. for every destination country, price from its eBay site (or eBay.com), convert to yen,
+     and estimate profit after Japan Post shipping to that zone
   4. attach legal / shipping / practical warnings from rules.yaml
   5. send push alerts for new strong deals (ntfy)
 Writes docs/data/results.json for the app.
@@ -81,6 +82,8 @@ def run(mock=False, today=None, now=None):
     jpy, fx_src = sources.jpy_rates(cfg["fx"]["fallback_jpy_per"], mock=mock)
     tr = Translator(mock=mock)
     dests = cfg["destinations"]
+    pick = (cfg.get("scan") or {}).get("markets", "all")
+    markets = {k: v for k, v in cfg["markets"].items() if pick == "all" or k in pick or k == "EBAY_US"}
     per_order_jpy = cfg["ebay"]["per_order_fee_usd"] * jpy["USD"]
     sale_now = saleinfo.current(cfg.get("sales"), now)
     now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
@@ -103,11 +106,11 @@ def run(mock=False, today=None, now=None):
             keep_r = keeper(it.get("rakuten_must_include"))
             cond = it.get("condition", "ANY")
 
-            # --- eBay comps per destination marketplace
-            market = {}
-            for code, d in dests.items():
-                band = local_band(it.get("price_usd"), d["currency"], jpy)
-                kw = dict(marketplace=d["marketplace"], currency=d["currency"], ship_to=code,
+            # --- eBay comps per searchable marketplace
+            mk = {}
+            for mid, mcfg in markets.items():
+                band = local_band(it.get("price_usd"), mcfg["currency"], jpy)
+                kw = dict(marketplace=mid, currency=mcfg["currency"], ship_to=mcfg["country"],
                           price_range=band, condition=cond, limit=cfg["scan"]["ebay_limit"],
                           exclude_sellers=cfg_t.get("ebay", {}).get("exclude_sellers"))
                 try:
@@ -115,35 +118,41 @@ def run(mock=False, today=None, now=None):
                     jp_c = [c for c in ebay.search(it["ebay"], location_jp=True, **kw) if keep(c)]
                 except Exception as e:  # one marketplace failing shouldn't kill the item
                     all_c, jp_c = [], []
-                    errors.append({"item": it["id"], "error": f"{d['marketplace']}: {e}"})
+                    errors.append({"item": it["id"], "error": f"{mid}: {e}"})
                 all_c, removed = trust.clean_ebay(all_c, cfg_t, today)
                 jp_c, _ = trust.clean_ebay(jp_c, cfg_t, today)
                 local, stats = profit.sale_price(jp_c, all_c, cfg["ebay"])
                 stats["filtered"] = removed
                 stats.update({"jp_count": len(jp_c), "all_count": len(all_c),
                               "non_jp_count": len([c for c in all_c if c.get("country") != "JP"]),
-                              "currency": d["currency"], "site": d["site"], **ebay_links(d["site"], it["ebay"])})
+                              "currency": mcfg["currency"], "site": mcfg["site"], **ebay_links(mcfg["site"], it["ebay"])})
                 stats["examples"] = [{k: c[k] for k in ("title", "total", "url", "country")}
                                      for c in sorted(jp_c or all_c, key=lambda c: c["total"])[:3]]
-                market[code] = {"local": local, "stats": stats}
+                mk[mid] = {"local": local, "stats": stats}
 
-            us = market.get("US", {})
-            us_ok = us.get("local") and us["stats"]["count"] >= 1
-            for code, m in market.items():
-                enough = m["local"] and m["stats"]["count"] >= cfg["ebay"]["min_local_comps"]
-                if enough:
-                    m["sale_jpy"] = m["local"] * jpy[dests[code]["currency"]]
-                    m["price_source"] = "local"
+            # --- price for each destination country: its own eBay site, else eBay.com
+            us = mk.get("EBAY_US", {})
+            us_ok = bool(us.get("local") and us["stats"]["count"] >= 1)
+            market = {}
+            for code, d in dests.items():
+                m = mk.get(d["market"])
+                if m and m["local"] and m["stats"]["count"] >= cfg["ebay"]["min_local_comps"]:
+                    market[code] = {"sale_jpy": m["local"] * jpy[m["stats"]["currency"]], "price_source": "local",
+                                    "local": m["local"], "currency": m["stats"]["currency"], "stats": m["stats"],
+                                    "market": d["market"]}
                 elif us_ok:
-                    m["sale_jpy"] = us["local"] * jpy["USD"]
-                    m["price_source"] = "eBay.com (too few local listings)"
+                    why = ("eBay.com (no search on this country's site)" if d["market"] == "EBAY_US" or not m
+                           else "eBay.com (too few listings on " + markets[d["market"]]["site"] + ")")
+                    market[code] = {"sale_jpy": us["local"] * jpy["USD"],
+                                    "price_source": "local" if d["market"] == "EBAY_US" and code == "US" else why,
+                                    "local": us["local"], "currency": "USD", "stats": us["stats"], "market": "EBAY_US"}
                 else:
-                    m["sale_jpy"] = None
-                    m["price_source"] = "none"
+                    market[code] = {"sale_jpy": None, "price_source": "none", "local": None, "stats": {}, "market": None}
 
-            info["comps_by_dest"] = {c: {**m["stats"], "local_price": m["local"], "price_source": m["price_source"]}
-                                     for c, m in market.items()}
-            info["comps"] = market["US"]["stats"] if "US" in market else {}
+            info["comps_by_market"] = {mid: {**m["stats"], "local_price": m["local"]} for mid, m in mk.items()}
+            info["comps_by_dest"] = {c: {**m["stats"], "local_price": m["local"], "price_source": m["price_source"],
+                                         "market": m["market"]} for c, m in market.items() if m["stats"]}
+            info["comps"] = us.get("stats", {})
             info["sale_usd"] = us.get("local")
             info.update({k: info["comps"].get(k) for k in ("active_url", "sold_url")})
 
@@ -181,7 +190,7 @@ def run(mock=False, today=None, now=None):
                 opp_id = f"{it['id']}::{c.get('item_code') or c['url']}"
                 deal = history.tags_for(hist, it["id"], opp_id, c["price_jpy"], today, cfg_h, now_utc)
                 title_en = translations.get(c["title"])
-                warns, blocked = rules_mod.warnings_for(it, c["title"], title_en, rules, list(dests))
+                warns, blocked = rules_mod.warnings_for(it, c["title"], title_en, rules, [])
                 pts = profit.points_value(c["price_jpy"], c.get("point_rate"), cfg.get("points"))
                 per = {}
                 for code, d in dests.items():
@@ -194,13 +203,16 @@ def run(mock=False, today=None, now=None):
                                          it.get("shipping_override_jpy"), on=today,
                                          cal=calibration.overrides(cal, it["id"], code))
                     res.update({"blocked": code in blocked, "price_source": m["price_source"],
-                                "sale_local": m["local"] if m["price_source"] == "local" else us.get("local"),
-                                "currency": d["currency"] if m["price_source"] == "local" else "USD",
-                                "comp_count": m["stats"]["count"] if m["price_source"] == "local" else us["stats"]["count"],
-                                "comp_basis": m["stats"]["basis"] if m["price_source"] == "local" else us["stats"]["basis"]})
+                                "sale_local": m["local"], "currency": m["currency"], "market": m["market"],
+                                "import_tax": d.get("import_tax"),
+                                "comp_count": m["stats"]["count"], "comp_basis": m["stats"]["basis"]})
                     per[code] = res
                 allowed = {k: v for k, v in per.items() if v["ok"] and not v["blocked"]}
-                best_code = max(allowed, key=lambda k: allowed[k]["profit_jpy"]) if allowed else None
+                order = (cfg.get("scan") or {}).get("headline_order") or ["US"]
+                best_code = next((k for k in order if k in allowed), None)
+                if best_code is None and allowed:
+                    best_code = max(allowed, key=lambda k: allowed[k]["profit_jpy"])
+                top_code = max(allowed, key=lambda k: allowed[k]["profit_jpy"]) if allowed else None
                 best = allowed.get(best_code) if best_code else None
 
                 if best:
@@ -222,7 +234,19 @@ def run(mock=False, today=None, now=None):
                                   "text": f"Only {n_comps} comparable eBay listings — price estimate is shaky. Check sold prices."})
                 if best and best["price_source"] != "local":
                     warns.append({"level": "info", "scope": "data",
-                                  "text": f"Few listings on {dests[best_code]['site']} — using the eBay.com price for {dests[best_code]['name']}."})
+                                  "text": f"{dests[best_code]['name']}: priced from {best['price_source']}."})
+                if best_code:
+                    for w in rules_mod.country_warnings(rules, best_code):
+                        warns.append({**w, "scope": "country", "country": best_code})
+                # worldwide view: where it makes money, and which countries to exclude in your eBay shipping policy
+                ok_codes = sorted((k for k, v in per.items() if v["ok"] and not v["blocked"] and v["profit_jpy"] > 0),
+                                  key=lambda k: -per[k]["profit_jpy"])
+                world = {"profitable": ok_codes, "countries": len(per),
+                         "exclude": sorted(k for k, v in per.items()
+                                           if v.get("blocked") or not v["ok"] or v["profit_jpy"] <= 0),
+                         "lowest": min((v["profit_jpy"] for v in per.values() if v["ok"] and not v["blocked"]),
+                                       default=None),
+                         "highest": allowed[top_code]["profit_jpy"] if top_code else None, "highest_country": top_code}
                 if rak_median and c["price_jpy"] < 0.6 * rak_median and len(matched) >= 3:
                     warns.append({"level": "caution", "scope": "data",
                                   "text": "Much cheaper than other Rakuten matches — make sure it's the same item, not a part or used/damaged."})
@@ -257,10 +281,12 @@ def run(mock=False, today=None, now=None):
                     "sell_speed": {"days": speed_days, "source": speed_src},
                     "per_dest": per,
                     "best": {"country": best_code, **best} if best else None,
+                    "worldwide": world,
                     "warnings": warns, "blocked": sorted(blocked),
                 })
             # --- remember today's prices for the history / deal tags
-            sale_by_dest = {code: m.get("sale_jpy") for code, m in market.items() if m.get("price_source") == "local"}
+            sale_by_dest = {code: m.get("sale_jpy") for code, m in market.items()
+                            if m.get("price_source") == "local" and markets.get(m["market"], {}).get("country") == code}
             info["ebay_trend_us"] = history.ebay_trend(hist, it["id"], "US", sale_by_dest.get("US"), today,
                                                        cfg_h["window_days"])
             history.update(hist, it["id"], today, [r["price_jpy"] for r in matched], sale_by_dest,
@@ -313,6 +339,7 @@ def run(mock=False, today=None, now=None):
                                        if date.fromisoformat(t["valid_from"]) <= today),
         },
         "destinations": dests,
+        "markets": markets,
         "global_notes": rules.get("global", []),
         "rules": {"categories": rules["categories"], "keywords": rules["keywords"],
                   "destinations": rules.get("destinations", {})},

@@ -100,6 +100,8 @@ def compute(buy_jpy, postage_included, sale_jpy, dest, weight_g, category, cfg, 
     if reserve_rate is None:
         rb = (cfg.get("risk") or {}).get("reserve_by_category", {})
         reserve_rate = rb.get(category, rb.get("default", 0))
+        if dest.get("import_tax") == "buyer_on_delivery":
+            reserve_rate += (cfg.get("risk") or {}).get("on_delivery_tax_extra", 0)
     reserve_jpy = sale_jpy * reserve_rate
 
     refund_jpy = 0
